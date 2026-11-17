@@ -9,44 +9,44 @@
 
 class CentroPedidos {
 public:
-    //existencias: vector de enteros con las existencias de cada producto
+    // existencias = con cuántas unidades empieza cada producto
 CentroPedidos(const Contexto& ctx, int existencias);
     //INVENTARIO
-    int consultar(int producto);
-    bool reservar(int producto);
-    void reponer();
+    int consultar(int producto); // dice cuántas quedan de un producto
+    bool reservar(int producto);// quita una si hay (true) o no hace nada (false)
+    void reponer();// suma 1 a cada producto
 
     // COLA DE PEDIDOS
-    void meterPedido(int producto); 
-    int sacarPedido();
-    void meterFin();
+    void meterPedido(int producto); // deja un pedido (espera si está llena)
+    int sacarPedido(); // coge el pedido más antiguo (espera si está vacía)
+    void meterFin();// deja un pedido -1 para que un robot termine(-1 sera nuestro valor de fin)
 
 
     //HILOS
-    void bucleGenerador(int g, int pedidos);
-    void bucleGestor();
-    void avisarGestor();
+    void bucleGenerador(int g, int pedidos);//intenta crear pedidos y meterlos en la cola
+    void bucleGestor();// cada 5 ms repone 1 unidad de cada producto
+    void avisarGestor();//al final para que el gestor pare
 
 private:
-    void comprobarExistencias(int producto);
+    void comprobarExistencias(int producto);// avisa si un producto queda en negativo
 
-    const Contexto&_ctx;
-    bool_carrera;
+    const Contexto&_ctx;//guardas estadisitcas 
+    bool_carrera;// true si se usa --fallo carrera
 
     // INVENTARIO
-    std::shared_mutex _mInventario;
-    std::vector<int> _existencias;   
+    std::shared_mutex _mInventario;// para apuntar estadísticas
+    std::vector<int> _existencias; // true si se usa --fallo carrera
     
     //COLA DE PEDIDOS(8 CAPACIDAD)
-    Semaforo_huecos;
-    std::counting_semaphore<8> _elementos;
-    std::mutex _mCola;
-    std::vector<int> _cola;
+    Semaforo_huecos;// sitios libres (empieza en 8)
+    std::counting_semaphore<8> _elementos;// pedidos que hay (empieza en 0)
+    std::mutex _mCola; // candado de la cola
+    std::vector<int> _cola;// los pedidos
 
     //GESTOR
-    std::mutex _mGestor;
-    std::condition_variable_any _cvGestor;
-    bool _finGestor = false;
+    std::mutex _mGestor;// candado del gestor
+    std::condition_variable_any _cvGestor;// timbre para despertar al gestor
+    bool _finGestor = false;// true = el gestor tiene que terminar
 
 
 };
