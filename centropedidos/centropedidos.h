@@ -26,3 +26,29 @@ CentroPedidos(const Contexto& ctx, int existencias);
     void bucleGenerador(int g, int pedidos);
     void bucleGestor();
     void avisarGestor();
+
+private:
+    void comprobarExistencias(int producto);
+
+    const Contexto&_ctx;
+    bool_carrera;
+
+    // INVENTARIO
+    std::shared_mutex _mInventario;
+    std::vector<int> _existencias;   
+    
+    //COLA DE PEDIDOS(8 CAPACIDAD)
+    Semaforo_huecos;
+    std::counting_semaphore<8> _elementos;
+    std::mutex _mCola;
+    std::vector<int> _cola;
+
+    //GESTOR
+    std::mutex _mGestor;
+    std::condition_variable_any _cvGestor;
+    bool _finGestor = false;
+
+
+};
+
+
