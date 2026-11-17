@@ -58,12 +58,12 @@ private:
     std::condition_variable _cvGestor;// timbre para despertar al gestor
     bool _finGestor = false;// true = el gestor tiene que terminar
 
-    // EMPAQUETADO (Capacidad 4)
-    std::mutex _mEmpaquetado;
-    std::condition_variable _cvEmpaquetadoLleno;
-    std::condition_variable _cvEmpaquetadoVacio;
-    std::queue<int> _bufferEmpaquetado;
-    bool _empaquetadoCerrado = false;
+    // EMPAQUETADO
+    std::mutex mutexEmpaquetado;
+    std::condition_variable EmpaquetadoLleno;
+    std::condition_variable EmpaquetadoVacio;
+    std::queue<int> bufferEmpaquetado;
+    bool empaquetadoCerrado = false;
 
 
 };
