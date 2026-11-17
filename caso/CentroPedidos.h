@@ -59,11 +59,11 @@ private:
     bool _finGestor = false;// true = el gestor tiene que terminar
 
     // EMPAQUETADO
-    std::mutex mutexEmpaquetado;
-    std::condition_variable EmpaquetadoLleno;
-    std::condition_variable EmpaquetadoVacio;
-    std::queue<int> bufferEmpaquetado;
-    bool empaquetadoCerrado = false;
+    std::mutex candadoEmpaquetado;
+    std::condition_variable hayHueco;
+    std::condition_variable hayProducto;
+    std::queue<int> productosPendientes;
+    bool noHayMasProductos = false;
 
 
 };
