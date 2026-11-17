@@ -31,21 +31,21 @@ private:
     void comprobarExistencias(int producto);// avisa si un producto queda en negativo
 
     const Contexto&_ctx;//guardas estadisitcas 
-    bool_carrera;// true si se usa --fallo carrera
+    bool _carrera;// true si se usa --fallo carrera
 
     // INVENTARIO
-    std::shared_mutex _mInventario;// para apuntar estadísticas
-    std::vector<int> _existencias; // true si se usa --fallo carrera
+    std::shared_mutex _mInventario;// candado del inventario
+    std::vector<int> _existencias;// cuántas unidades quedan de cada producto
     
     //COLA DE PEDIDOS(8 CAPACIDAD)
-    Semaforo_huecos;// sitios libres (empieza en 8)
+    Semaforo _huecos;// sitios libres (empieza en 8)
     std::counting_semaphore<8> _elementos;// pedidos que hay (empieza en 0)
     std::mutex _mCola; // candado de la cola
     std::vector<int> _cola;// los pedidos
 
     //GESTOR
     std::mutex _mGestor;// candado del gestor
-    std::condition_variable_any _cvGestor;// timbre para despertar al gestor
+    std::condition_variable _cvGestor;// timbre para despertar al gestor
     bool _finGestor = false;// true = el gestor tiene que terminar
 
 
