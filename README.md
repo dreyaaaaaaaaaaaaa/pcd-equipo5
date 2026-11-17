@@ -41,6 +41,20 @@ Un pasillo circular de 12 celdas donde robots recogen productos de las estanter�
    - `IA.md`: registro completo de todo uso de herramientas de IA.
    - `README.md`: cómo ejecutar el caso y con cuántos hilos se mide la competición.
 
+## Reparto
+
+Ordenado de la parte más compleja a la menos compleja.
+
+| # | Parte | Responsable | Incluye |
+|---|---|---|---|
+| 1 | Pasillo y movimiento | Ange Lucas Benoit | Celdas del pasillo, `Robot::ejecutar()`, modos `interbloqueo` y `livelock` |
+| 2 | Pedidos e inventario | Víctor Díez Sánchez | Existencias (`shared_mutex`), cola de pedidos con semáforos, generadores, gestor, modo `carrera` |
+| 3 | Cargadores | Alejandro Castro Espín | Monitor de cargadores FIFO, batería, modo `inanicion`, experimento |
+| 4 | Semaforo y `main` | Álvaro Rovira de las Heras | `Semaforo`, `prueba_semaforo`, `main.cpp` (cierre, invariantes finales, `Lanzador`), salidas de `--estres 10` |
+| 5 | Empaquetado | Vicent David Burgal | Buffer de empaquetado (monitor FIFO), empaquetadores, competición (`Producto.cpp`) |
+
+Todos: la fila de su monitor en `DISENO.md` antes de programarlo, sus consultas en `IA.md` y sus propios commits. Antes de empezar, acordar entre todos los métodos públicos de `Robot`, `Pasillo` y `CentroPedidos`.
+
 ## Calendario
 
 | Semana | Qué tiene que estar | Etiqueta |
