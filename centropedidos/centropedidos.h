@@ -9,8 +9,9 @@
 
 class CentroPedidos {
 public:
-    CentroPedidos(const Contexto& ctx, int existencias);
-
+    //existencias: vector de enteros con las existencias de cada producto
+CentroPedidos(const Contexto& ctx, int existencias);
+    //INVENTARIO
     int consultar(int producto);
     bool reservar(int producto);
     void reponer();
