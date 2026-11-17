@@ -15,3 +15,14 @@ CentroPedidos(const Contexto& ctx, int existencias);
     int consultar(int producto);
     bool reservar(int producto);
     void reponer();
+
+    // COLA DE PEDIDOS
+    void meterPedido(int producto); 
+    int sacarPedido();
+    void meterFin();
+
+
+    //HILOS
+    void bucleGenerador(int g, int pedidos);
+    void bucleGestor();
+    void avisarGestor();
