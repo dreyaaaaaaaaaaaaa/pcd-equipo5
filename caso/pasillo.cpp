@@ -18,3 +18,13 @@ void pasillo:ocuparCargador(int robot){
     _cvCargadores.wait(lock, [this, miTicket]{
         return miTicket == _ticketAtendido && _cargadoresLibres > 0;
     });
+
+    --_cargadoresLibres--;// el robot tiene turno y plaza, le resamos esa para que salga ocupada
+    ++_ticketAtendido;// avanzamos un turno, el siguiente ticket puede ocupar plaza si esta libre
+    lock.unlock();
+    _cvCargadores.notify_all();// todos los robotr vulven a combrobar si les toco y si hay plaza
+
+    const auto fin = std::chrono::steady_clock::now();//para medir cuanto tiempo pasa desde que el robot llega hasta que consigue plaza
+    const auto espera = std::chrono::duration_cast<std::chrono::milliseconds>(fin - inicio);
+
+}
