@@ -7,6 +7,10 @@
 #include <shared_mutex>
 #include <vector>
 
+#include <chrono>
+#include <queue>
+#include <thread>
+
 class CentroPedidos {
 public:
     // existencias = con cuántas unidades empieza cada producto
@@ -26,6 +30,12 @@ CentroPedidos(const Contexto& ctx, int existencias);
     void bucleGenerador(int g, int pedidos);//intenta crear pedidos y meterlos en la cola
     void bucleGestor();// cada 5 ms repone 1 unidad de cada producto
     void avisarGestor();//al final para que el gestor pare
+
+    // EMPAQUETADO
+    void dejarProducto(int producto); // robot deja un producto en el buffer
+    int cogerProducto();              // empaquetador saca un producto
+    void cerrarEmpaquetado();         // main cierra el buffer al terminar robots
+    void bucleEmpaquetador(int id);   // hilo empaquetador
 
 private:
     void comprobarExistencias(int producto);// avisa si un producto queda en negativo
@@ -47,6 +57,13 @@ private:
     std::mutex _mGestor;// candado del gestor
     std::condition_variable _cvGestor;// timbre para despertar al gestor
     bool _finGestor = false;// true = el gestor tiene que terminar
+
+    // EMPAQUETADO
+    std::mutex candadoEmpaquetado;
+    std::condition_variable hayHueco;
+    std::condition_variable hayProducto;
+    std::queue<int> productosPendientes;
+    bool noHayMasProductos = false;
 
 
 };
