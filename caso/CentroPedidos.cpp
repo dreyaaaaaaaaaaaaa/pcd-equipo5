@@ -53,3 +53,20 @@ void CentroPedidos::comprobarExistencias(int producto) {
         _ctx.estadisticas.violacion("existencias < 0");   // ...lo apunto como error
     }
 }
+
+
+// Un robot deja un producto en la zona de empaquetado.
+// Si ya hay cuatro productos esperando, espera hasta que
+// un empaquetador saque uno y quede sitio libre.
+void CentroPedidos::dejarProducto(int producto) {
+    std::unique_lock<std::mutex> candado(mutexEmpaquetado);
+
+    cvEmpaquetadoLleno.wait(candado, [this] {
+        return bufferEmpaquetado.size() < 4;
+    });
+
+    bufferEmpaquetado.push(producto);
+
+    // Avisamos a un empaquetador de que ya hay un producto disponible.
+    cvEmpaquetadoVacio.notify_one();
+}
