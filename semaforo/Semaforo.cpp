@@ -11,6 +11,9 @@ void Semaforo::acquire() {
 }
 
 void Semaforo::release() {
+    std::unique_lock<std::mutex> lock(_m);
+    ++_valor;
+    _cv.notify_one();
 }
 
 bool Semaforo::tryAcquireFor(std::chrono::milliseconds) {
