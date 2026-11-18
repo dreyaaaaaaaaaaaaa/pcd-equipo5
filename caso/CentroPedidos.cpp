@@ -55,9 +55,9 @@ void CentroPedidos::comprobarExistencias(int producto) {
 }
 
 
-// Un robot deja un producto en la zona de empaquetado.
+// Un robot deja un producto en la zona de empaquetado
 // Si ya hay cuatro productos esperando, espera hasta que
-// un empaquetador saque uno y quede sitio libre.
+// un empaquetador saque uno y quede sitio libre
 void CentroPedidos::dejarProducto(int producto) {
     std::unique_lock<std::mutex> candado(candadoEmpaquetado);
 
@@ -67,14 +67,14 @@ void CentroPedidos::dejarProducto(int producto) {
 
     productosPendientes.push(producto);
 
-    // Avisamos a un empaquetador de que ya hay un producto disponible.
+    // Avisamos a un empaquetador de que ya hay un producto disponible
     hayProducto.notify_one();
 }
 
 
-// Un empaquetador coge el producto más antiguo que haya en el buffer.
+// Un empaquetador coge el producto más antiguo que haya en el buffer
 // Si no hay productos, espera. Si el buffer está cerrado y vacío,
-// devuelve -1 para indicar que puede terminar.
+// devuelve -1 para indicar que puede terminar
 int CentroPedidos::cogerProducto() {
     std::unique_lock<std::mutex> candado(candadoEmpaquetado);
 
@@ -82,7 +82,7 @@ int CentroPedidos::cogerProducto() {
         return !productosPendientes.empty() || noHayMasProductos;
     });
 
-    // El buffer se ha cerrado y ya no queda nada por empaquetar.
+    // El buffer se ha cerrado y ya no queda nada por empaquetar
     if (productosPendientes.empty()) {
         return -1;
     }
@@ -90,15 +90,15 @@ int CentroPedidos::cogerProducto() {
     int producto = productosPendientes.front();
     productosPendientes.pop();
 
-    // Avisamos a un robot de que ahora hay una plaza libre.
+    // Avisamos a un robot de que ahora hay una plaza libre
     hayHueco.notify_one();
 
     return producto;
 }
 
-// Se llama cuando ya no van a llegar más productos.
+// Se llama cuando ya no van a llegar más productos
 // Despierta a todos los empaquetadores para que puedan revisar
-// si todavía queda algo por empaquetar.
+// si todavía queda algo por empaquetar
 void CentroPedidos::cerrarEmpaquetado() {
     {
         std::lock_guard<std::mutex> candado(candadoEmpaquetado);
@@ -110,21 +110,21 @@ void CentroPedidos::cerrarEmpaquetado() {
 
 // Ciclo de un empaquetador: coge productos mientras queden,
 // los empaqueta durante dos milisegundos y termina cuando
-// el buffer está cerrado y vacío.
+// el buffer está cerrado y vacío
 void CentroPedidos::bucleEmpaquetador(int id) {
     // El identificador no se usa todavía, pero lo mantenemos
-    // por si más adelante hace falta distinguir empaquetadores.
+    // por si más adelante hace falta distinguir empaquetadores
     (void)id;
 
     while (true) {
         int producto = cogerProducto();
 
-        // Fin: el buffer está cerrado y no queda ningún producto.
+        // Fin: el buffer está cerrado y no queda ningún producto
         if (producto == -1) {
             break;
         }
 
-        // El empaquetador tarda dos milisegundos en preparar cada paquete.
+        // El empaquetador tarda dos milisegundos en preparar cada paquete
         std::this_thread::sleep_for(std::chrono::milliseconds(2));
 
         ctx.estadisticas.incrementar("paquetes");
