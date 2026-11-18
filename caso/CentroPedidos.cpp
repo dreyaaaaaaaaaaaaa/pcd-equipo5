@@ -73,7 +73,6 @@ void CentroPedidos::dejarProducto(int producto) {
 
 
 // COLA DE PEDIDOS
-
 void CentroPedidos::meterPedido(int producto) {
     _huecos.acquire();                           // cojo un sitio libre (si no hay, espero)
     {
