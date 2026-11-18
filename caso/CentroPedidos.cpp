@@ -32,7 +32,6 @@ bool CentroPedidos::reservar(int producto) {
         return true;
 }                                        
 
-
 std::unique_lock<std::shared_mutex> lk(_mInventario);  // VERSIÓN BUENA: candado de escritura
     if (_existencias[producto] <= 0) {                     // miro si hay...
         return false;                                      // no hay: no reservo
@@ -41,3 +40,16 @@ std::unique_lock<std::shared_mutex> lk(_mInventario);  // VERSIÓN BUENA: candad
     comprobarExistencias(producto);                        // compruebo el invariante
     return true;                                           // reservado
 }                                                          // aquí se suelta el candado solo
+
+void CentroPedidos::reponer() {
+    std::unique_lock<std::shared_mutex> lk(_mInventario);  // candado de escritura
+    for (int p = 0; p < 6; ++p) {                          // recorro los 6 productos
+        _existencias[p]++;                                 // sumo 1 a cada uno
+    }
+}                                                          // aquí se suelta el candado solo
+
+void CentroPedidos::comprobarExistencias(int producto) {
+    if (_existencias[producto] < 0) {                     // si ha quedado en negativo...
+        _ctx.estadisticas.violacion("existencias < 0");   // ...lo apunto como error
+    }
+}
