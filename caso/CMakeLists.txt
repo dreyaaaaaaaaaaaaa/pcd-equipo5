@@ -9,8 +9,8 @@ add_executable(${NOMBRE_EJECUTABLE}
     main.cpp
     CentroPedidos.h
     CentroPedidos.cpp
-    # Clase1.cpp
-    # Clase2.h
+    pasillo.h
+    pasillo.cpp
     # Clase2.cpp
     # Clase3.h
     # Clase3.cpp
