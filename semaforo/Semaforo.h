@@ -16,7 +16,7 @@ public:
     bool tryAcquireFor(std::chrono::milliseconds plazo);
 
 private:
-    std::mutex _m;
-    std::condition_variable _cv;
+    std::mutex _cerrojo;
+    std::condition_variable _espera;
     int _valor;
 };
