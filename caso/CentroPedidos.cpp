@@ -96,6 +96,42 @@ int CentroPedidos::cogerProducto() {
     return producto;
 }
 
+// Se llama cuando ya no van a llegar más productos.
+// Despierta a todos los empaquetadores para que puedan revisar
+// si todavía queda algo por empaquetar.
+void CentroPedidos::cerrarEmpaquetado() {
+    {
+        std::lock_guard<std::mutex> candado(candadoEmpaquetado);
+        noHayMasProductos = true;
+    }
+
+    hayProducto.notify_all();
+}
+
+// Ciclo de un empaquetador: coge productos mientras queden,
+// los empaqueta durante dos milisegundos y termina cuando
+// el buffer está cerrado y vacío.
+void CentroPedidos::bucleEmpaquetador(int id) {
+    // El identificador no se usa todavía, pero lo mantenemos
+    // por si más adelante hace falta distinguir empaquetadores.
+    (void)id;
+
+    while (true) {
+        int producto = cogerProducto();
+
+        // Fin: el buffer está cerrado y no queda ningún producto.
+        if (producto == -1) {
+            break;
+        }
+
+        // El empaquetador tarda dos milisegundos en preparar cada paquete.
+        std::this_thread::sleep_for(std::chrono::milliseconds(2));
+
+        ctx.estadisticas.incrementar("paquetes");
+        ctx.vigilante.progreso();
+    }
+}
+
 
 // COLA DE PEDIDOS
 void CentroPedidos::meterPedido(int producto) {
