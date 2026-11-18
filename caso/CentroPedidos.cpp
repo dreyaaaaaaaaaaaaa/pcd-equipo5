@@ -95,3 +95,14 @@ int CentroPedidos::cogerProducto() {
 
     return producto;
 }
+
+
+// COLA DE PEDIDOS
+void CentroPedidos::meterPedido(int producto) {
+    _huecos.acquire();                           // cojo un sitio libre (si no hay, espero)
+    {
+        std::lock_guard<std::mutex> lk(_mCola);  // candado de la cola
+        _cola.push_back(producto);               // meto el pedido al final
+    }                                            // aquí se suelta el candado solo
+    _elementos.release();                        // aviso: hay un pedido más
+}
