@@ -1,18 +1,18 @@
 #include "Semaforo.h"
 
-// TODO: implementar. Ahora mismo compila, pero no sincroniza nada.
-
 Semaforo::Semaforo(int valorInicial) : _valor(valorInicial) {}
 
 void Semaforo::acquire() {
-    (void)_valor;  // TODO: quitad esta línea al implementar
+    std::unique_lock<std::mutex> lock(_m);
+    while (_valor <= 0) {
+        _cv.wait(lock);
+    }
+    --_valor;
 }
 
 void Semaforo::release() {
-    // TODO
 }
 
-bool Semaforo::tryAcquireFor(std::chrono::milliseconds plazo) {
-    (void)plazo;  // TODO
+bool Semaforo::tryAcquireFor(std::chrono::milliseconds) {
     return false;
 }
