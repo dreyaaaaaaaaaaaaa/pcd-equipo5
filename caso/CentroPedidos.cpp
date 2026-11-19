@@ -55,6 +55,60 @@ void CentroPedidos::comprobarExistencias(int producto) {
 }
 
 
+
+//PEDIDOS
+void CentroPedidos::meterPedido(int producto) {
+    _huecos.acquire();                           // cojo un sitio libre (si no hay, espero)
+    {
+        std::lock_guard<std::mutex> lk(_mCola);  // candado de la cola
+        _cola.push_back(producto);               // meto el pedido al final
+    }                                            // aquí se suelta el candado solo
+    _elementos.release();                        // aviso: hay un pedido más
+}
+
+
+int CentroPedidos::sacarPedido() {
+    auto inicio = std::chrono::steady_clock::now();  // apunto la hora para medir la espera
+    _elementos.acquire();                            // cojo un pedido (si no hay, espero)
+    _ctx.estadisticas.registrarEspera("robot (pedido)", std::chrono::steady_clock::now() - inicio);  // apunto lo que he esperado
+
+    int producto;                                    // aquí guardaré el pedido
+    {
+        std::lock_guard<std::mutex> lk(_mCola);      // candado de la cola
+        producto = _cola[0];                         // cojo el primero (el más antiguo)
+        _cola.erase(_cola.begin());                  // y lo quito de la cola
+    }                                                // aquí se suelta el candado solo
+    _huecos.release();                               // aviso: queda un sitio libre
+    return producto;                                 // devuelvo el producto (o -1 si es el de fin)
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//EMPAQUETADO
 // Un robot deja un producto en la zona de empaquetado.
 // Si ya hay cuatro productos esperando, espera hasta que
 // un empaquetador saque uno y quede sitio libre
