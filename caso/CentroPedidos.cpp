@@ -104,6 +104,20 @@ void CentroPedidos::bucleGenerador(int g, int pedidos) {
 
 
 
+// HILO GESTOR 
+
+void CentroPedidos::bucleGestor() {
+    std::unique_lock<std::mutex> lk(_mGestor);  // candado del gestor
+    while (true) {                              // repito hasta que me digan que pare
+        bool fin = _cvGestor.wait_for(lk, std::chrono::milliseconds(5), [this] { return _finGestor; });  // duermo 5 ms o hasta que me avisen
+        if (fin) {                              // si me han avisado...
+            break;                              // ...termino
+        }
+        reponer();                              // si han pasado 5 ms: repongo
+    }
+}
+
+
 
 
 
