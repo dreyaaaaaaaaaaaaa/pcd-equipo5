@@ -55,47 +55,6 @@ void CentroPedidos::comprobarExistencias(int producto) {
 }
 
 
-// Un robot deja un producto en la zona de empaquetado.
-// Si ya hay cuatro productos esperando, espera hasta que
-// un empaquetador saque uno y quede sitio libre.
-void CentroPedidos::dejarProducto(int producto) {
-    std::unique_lock<std::mutex> candado(candadoEmpaquetado);
-
-    hayHueco.wait(candado, [this] {
-        return productosPendientes.size() < 4;
-    });
-
-    productosPendientes.push(producto);
-
-    // Avisamos a un empaquetador de que ya hay un producto disponible.
-    hayProducto.notify_one();
-}
-
-
-// Un empaquetador coge el producto más antiguo que haya en el buffer.
-// Si no hay productos, espera. Si el buffer está cerrado y vacío,
-// devuelve -1 para indicar que puede terminar.
-int CentroPedidos::cogerProducto() {
-    std::unique_lock<std::mutex> candado(candadoEmpaquetado);
-
-    hayProducto.wait(candado, [this] {
-        return !productosPendientes.empty() || noHayMasProductos;
-    });
-
-    // El buffer se ha cerrado y ya no queda nada por empaquetar.
-    if (productosPendientes.empty()) {
-        return -1;
-    }
-
-    int producto = productosPendientes.front();
-    productosPendientes.pop();
-
-    // Avisamos a un robot de que ahora hay una plaza libre.
-    hayHueco.notify_one();
-
-    return producto;
-}
-
 
 // COLA DE PEDIDOS
 void CentroPedidos::meterPedido(int producto) {
@@ -105,4 +64,95 @@ void CentroPedidos::meterPedido(int producto) {
         _cola.push_back(producto);               // meto el pedido al final
     }                                            // aquí se suelta el candado solo
     _elementos.release();                        // aviso: hay un pedido más
+}
+
+
+int CentroPedidos::sacarPedido() {
+    auto inicio = std::chrono::steady_clock::now();  // apunto la hora para medir la espera
+    _elementos.acquire();                            // cojo un pedido (si no hay, espero)
+    _ctx.estadisticas.registrarEspera("robot (pedido)", std::chrono::steady_clock::now() - inicio);  // apunto lo que he esperado
+
+    int producto;                                    // aquí guardaré el pedido
+    {
+        std::lock_guard<std::mutex> lk(_mCola);      // candado de la cola
+        producto = _cola[0];                         // cojo el primero (el más antiguo)
+        _cola.erase(_cola.begin());                  // y lo quito de la cola
+    }                                                // aquí se suelta el candado solo
+    _huecos.release();                               // aviso: queda un sitio libre
+    return producto;                                 // devuelvo el producto (o -1 si es el de fin)
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// EMPAQUETADO
+// Un robot deja un producto en la zona de empaquetado.
+// Si ya hay cuatro productos esperando, espera hasta que
+// un empaquetador saque uno y quede sitio libre.
+void CentroPedidos::dejarProducto(int producto) {
+    std::unique_lock<std::mutex> candado(candadoEmpaquetado);
+
+
+    hayHueco.wait(candado, [this] {
+        return productosPendientes.size() < 4;
+    });
+
+
+    productosPendientes.push(producto);
+
+
+    // Avisamos a un empaquetador de que ya hay un producto disponible.
+    hayProducto.notify_one();
+}
+
+
+
+
+// Un empaquetador coge el producto más antiguo que haya en el buffer.
+// Si no hay productos, espera. Si el buffer está cerrado y vacío,
+// devuelve -1 para indicar que puede terminar.
+int CentroPedidos::cogerProducto() {
+    std::unique_lock<std::mutex> candado(candadoEmpaquetado);
+
+
+    hayProducto.wait(candado, [this] {
+        return !productosPendientes.empty() || noHayMasProductos;
+    });
+
+
+    // El buffer se ha cerrado y ya no queda nada por empaquetar.
+    if (productosPendientes.empty()) {
+        return -1;
+    }
+
+
+    int producto = productosPendientes.front();
+    productosPendientes.pop();
+
+
+    // Avisamos a un robot de que ahora hay una plaza libre.
+    hayHueco.notify_one();
+
+
+    return producto;
 }
