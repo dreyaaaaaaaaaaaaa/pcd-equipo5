@@ -83,7 +83,9 @@ int CentroPedidos::sacarPedido() {
 }
 
 
-
+void CentroPedidos::meterFin() {
+    meterPedido(-1);  // meto un -1: el robot que lo saque termina
+}
 
 
 
