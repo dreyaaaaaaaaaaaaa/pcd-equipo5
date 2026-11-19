@@ -118,21 +118,13 @@ void CentroPedidos::bucleGestor() {
 }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+void CentroPedidos::avisarGestor() {
+    {
+        std::lock_guard<std::mutex> lk(_mGestor);  // candado del gestor
+        _finGestor = true;                         // dejo la nota de "termina"
+    }                                              // aquí se suelta el candado solo
+    _cvGestor.notify_one();                        // toco el timbre para despertarlo
+}
 
 
 
