@@ -88,7 +88,19 @@ void CentroPedidos::meterFin() {
 }
 
 
+// HILO GENERADOR
 
+void CentroPedidos::bucleGenerador(int g, int pedidos) {
+    for (int k = 0; k < pedidos; ++k) {                                // repito para cada pedido
+        int producto = (7 * g + k) % 6;                                // qué producto toca (fórmula del enunciado)
+        if (reservar(producto)) {                                      // si he podido coger una unidad...
+            meterPedido(producto);                                     // ...meto el pedido en la cola
+            _ctx.estadisticas.sumar("pedidos creados", 1);             // y lo cuento
+        } else {                                                       // si no había unidades...
+            std::this_thread::sleep_for(std::chrono::milliseconds(1));  // ...espero 1 ms y paso al siguiente
+        }
+    }
+}
 
 
 
