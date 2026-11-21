@@ -1,30 +1,26 @@
 #include <chrono>
 #include <mutex>
 
-void pasillo:ocuparCargador(int robot){ 
-    //demomento no vamos a usar el identificador ya que mas adelante nos servira para
-    //escribir una traza que indique que el robot ha perdido un cargador
-    (void)robot; 
-    //Se gurda donde empieza la espera antes de pedir el mutex para ver cuanto tiempo tarda tambien el robot 
-    //esperando su turno
-    const auto inicio = std::chrono::steady_clock::now();
-    //para bloquear el mutex
-    std::unique_lock<std::mutex> lock(_mCargadores);
-    //cada robot recibe un numero y el contador aumenta ahsta que el robot reciba otro ticket
-    const long miTicket = _ticketSiguiente++;
+void Pasillo::ocuparCargador(int robot){        //Demomento no vamos a usar el identificador ya que mas adelante nos servira para
+                                                //escribir una traza que indique que el robot ha pedido un cargador
+    (void)robot;                        
 
-//robot espera hasta que su ticket sea el siguiente y que haya un cargador libre
-    //wait libera el mutex y lo vuelve a bloquear 
-    _cvCargadores.wait(lock, [this, miTicket]{
-        return miTicket == _ticketAtendido && _cargadoresLibres > 0;
+    const auto inicio = std::chrono::steady_clock::now();       //Se gurda donde empieza la espera antes de pedir el mutex para ver cuanto tiempo tarda tambien el robot esperando su turno
+    
+    std::unique_lock<std::mutex> lock(_mCargadores);        //Bloque el mutex para proteger los datos compartidos de cargadores
+   
+    const long miTicket = _ticketSiguiente++;       //Cada robot recibe un numero y el contador aumenta ahsta que el robot reciba otro ticket
+
+    _cvCargadores.wait(lock, [this, miTicket]{      //Robot espera hasta que su ticket sea el siguiente y que haya un cargador libre wait libera el mutex y lo vuelve a bloquear 
+        return miTicket == _ticketAtendido && _cargadoresLibres > 0;        // Puede continuar si su ticket es el turno actual y hay un cargador libre.
     });
 
-    --_cargadoresLibres--;// el robot tiene turno y plaza, le resamos esa para que salga ocupada
-    ++_ticketAtendido;// avanzamos un turno, el siguiente ticket puede ocupar plaza si esta libre
-    lock.unlock();
-    _cvCargadores.notify_all();// todos los robotr vulven a combrobar si les toco y si hay plaza
+    --_cargadoresLibres;      // El robot tiene turno y plaza, le resamos esa para que salga ocupada
+    ++_ticketAtendido;      // Avanzamos un turno, el siguiente ticket puede ocupar plaza si esta libre
+    lock.unlock();      //Libera el mutex
+    _cvCargadores.notify_all();     // Todos los robots vuelven a comprobar si les toca y si hay plaza libre.
 
-    const auto fin = std::chrono::steady_clock::now();//para medir cuanto tiempo pasa desde que el robot llega hasta que consigue plaza
-    const auto espera = std::chrono::duration_cast<std::chrono::milliseconds>(fin - inicio);
+    const auto fin = std::chrono::steady_clock::now();      //Para medir cuanto tiempo pasa desde que el robot llega hasta que consigue plaza
+    const auto espera = std::chrono::duration_cast<std::chrono::milliseconds>(fin - inicio);        // Calcula cuánto tiempo esperó el robot en milisegundos.
 
 }
