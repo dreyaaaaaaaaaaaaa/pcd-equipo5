@@ -3,7 +3,7 @@
 
 void Pasillo::ocuparCargador(int robot){        //Demomento no vamos a usar el identificador ya que mas adelante nos servira para
                                                 //escribir una traza que indique que el robot ha pedido un cargador
-    (void)robot;                        
+    (void)robot;        //Todavia no usamos robot                        
 
     const auto inicio = std::chrono::steady_clock::now();       //Se gurda donde empieza la espera antes de pedir el mutex para ver cuanto tiempo tarda tambien el robot esperando su turno
     
@@ -24,3 +24,15 @@ void Pasillo::ocuparCargador(int robot){        //Demomento no vamos a usar el i
     const auto espera = std::chrono::duration_cast<std::chrono::milliseconds>(fin - inicio);        // Calcula cuánto tiempo esperó el robot en milisegundos.
 
 }
+
+
+void Pasillo::soltarCargador(int robot){        //Demomento no vamos a usar el identificador ya que mas adelante nos servira para
+                                                //escribir una traza que indique que el robot ha soltado un cargador
+    (void)robot;{       
+
+        std::lock_guard<std::mutex> lock(_mCargadores);     //// Bloquea el mutex mientras se actualizan los datos de los cargadores.
+        ++_cargadoresLibres;}       // Suma uno al número de cargadores libres porque el robot libera su plaza.
+
+        _cvCargadores.notify_all();}        // Avisa a los robots que esperan para que comprueben si ya pueden ocupar un cargador.
+    
+    
