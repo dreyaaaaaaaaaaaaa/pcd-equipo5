@@ -1,0 +1,10 @@
+^C:\USERS\VICTO\DOWNLOADS\PROYECTO CONCURRIDA\PCD-EQUIPO5\CASO\CMAKELISTS.TXT
+setlocal
+"C:\Program Files\CMake\bin\cmake.exe" "-SC:/Users/victo/Downloads/proyecto concurrida/pcd-equipo5" "-BC:/Users/victo/Downloads/proyecto concurrida/pcd-equipo5/build" --check-stamp-file "C:/Users/victo/Downloads/proyecto concurrida/pcd-equipo5/build/caso/CMakeFiles/generate.stamp"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
