@@ -1,3 +1,11 @@
+#include <chrono>
+#include <mutex>
+#include "Estadisticas.h"
+#include "Pasillo.h"
+#include "Config.h"
+#include <thread>
+#include <string>
+
 //CONSTRUCTOR
 Pasillo::Pasillo(const Contexto& ctx, int cargadores)
     : _ctx(ctx),
