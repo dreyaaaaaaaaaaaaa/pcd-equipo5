@@ -1,0 +1,10 @@
+^C:\USERS\VICTO\DOWNLOADS\PROYECTO CONCURRIDA\PCD-EQUIPO5\BUILD\CMAKEFILES\DDDB81C263EB16DF20CF73E1F75AE4D9\GENERATE.STAMP.RULE
+setlocal
+"C:\Program Files\CMake\bin\cmake.exe" "-SC:/Users/victo/Downloads/proyecto concurrida/pcd-equipo5" "-BC:/Users/victo/Downloads/proyecto concurrida/pcd-equipo5/build" --check-stamp-list CMakeFiles/generate.stamp.list --vs-solution-file "C:/Users/victo/Downloads/proyecto concurrida/pcd-equipo5/build/TrabajoTemas3a8.slnx"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
