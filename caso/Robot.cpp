@@ -6,6 +6,6 @@
 
 
 
-Robot::Robot(int id, Pasillo& pasillo): 
-    _id(id),    
-    _pasillo(pasillo) 
+Robot::Robot(int id, Pasillo& pasillo):     //// Define el constructor de robot
+    _id(id),        //Define el identificador de robot
+    _pasillo(pasillo)       //Define la referencia al pasillo compartido que usará el robot
