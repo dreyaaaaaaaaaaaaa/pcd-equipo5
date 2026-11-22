@@ -3,6 +3,7 @@
 #include "array"
 #include <condition_variable>
 #include <mutex>
+#include <map>
 
 class Pasillo {
 public:

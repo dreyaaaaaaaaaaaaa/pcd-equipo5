@@ -1,6 +1,9 @@
 #include <chrono>
 #include <mutex>
 #include "Estadisticas.h"  
+#include "Pasillo.h"
+#include "Config.h"
+#include <thread>
 
 
 
