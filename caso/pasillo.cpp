@@ -2,6 +2,10 @@
 #include <mutex>
 #include "Estadisticas.h"  
 
+
+
+
+
 void Pasillo::ocuparCargador(int robot){        //Demomento no vamos a usar el identificador ya que mas adelante nos servira para
                                                 //escribir una traza que indique que el robot ha pedido un cargador
     (void)robot;        //Todavia no usamos robot                        
