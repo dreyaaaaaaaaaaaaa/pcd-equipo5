@@ -2,6 +2,9 @@
 
 #include "Valor.h"
 
+#include <thread>
+#include <vector>
+
 // Versión secuencial de partida: un solo hilo, ignora "hilos".
 
 // // Cambiadla por la vuestra.
@@ -26,30 +29,25 @@ std::uint64_t producto(int hilos) {
         return resultado;
     }
 
-    // Resultado parcial de cada hilo, esto se modificará más tarde con los resultados de verdad de cada hilo
-    std::uint64_t resultadoHilo1 = 1;
-    std::uint64_t resultadoHilo2 = 1;
-    std::uint64_t resultadoHilo3 = 1;
-    std::uint64_t resultadoHilo4 = 1;
+    // No creamos más hilos que valores.
+    int numeroHilos = hilos;
 
-    // Dividimos los valores en cuatro partes
+    if (numeroHilos > N_VALORES) {
+        numeroHilos = N_VALORES;
+    }
 
-    std::uint64_t parte = N_VALORES / 4; // Esto nos calcula cuántos valores le tocan a cada hilo
+    // Cada hilo guardará aquí su resultado parcial.
+    std::vector<std::uint64_t> resultadosParciales(numeroHilos);
 
-    // Como vale 2000000, cada hilo se encargará de 500000 valores
+    // Creamos un vector con espacio para todos los hilos.
+    std::vector<std::thread> hilosCreados(numeroHilos);
 
-    std::uint64_t inicio1 = 0;
-    std::uint64_t fin1 = parte; // 500000
+    // Calculamos cuántos valores le tocan a cada hilo.
+    std::uint64_t valoresPorHilo = N_VALORES / numeroHilos;
 
-    std::uint64_t inicio2 = fin1;
-    std::uint64_t fin2 = fin1 + parte; // 1000000
-
-    std::uint64_t inicio3 = fin2;
-    std::uint64_t fin3 = fin2 + parte; // 1500000
-
-    std::uint64_t inicio4 = fin3;
-    std::uint64_t fin4 = N_VALORES; // 2000000
-
+    // El primer hilo empieza en el valor 0.
+    std::uint64_t comienzo = 0;
+    
  // Creamos los cuatro hilos.
     std::thread hilo0([&resultadoHilo0, inicio0, fin0]() {
         for (std::uint64_t i = inicio0; i < fin0; ++i) {
