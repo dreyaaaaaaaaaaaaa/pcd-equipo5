@@ -1,8 +1,0 @@
-C:/Users/victo/Downloads/proyecto concurrida/pcd-equipo5/build/CMakeFiles/ALL_BUILD.dir
-C:/Users/victo/Downloads/proyecto concurrida/pcd-equipo5/build/CMakeFiles/ZERO_CHECK.dir
-C:/Users/victo/Downloads/proyecto concurrida/pcd-equipo5/build/base/CMakeFiles/base.dir
-C:/Users/victo/Downloads/proyecto concurrida/pcd-equipo5/build/semaforo/CMakeFiles/semaforo.dir
-C:/Users/victo/Downloads/proyecto concurrida/pcd-equipo5/build/prueba_semaforo/CMakeFiles/prueba_semaforo.dir
-C:/Users/victo/Downloads/proyecto concurrida/pcd-equipo5/build/caso/CMakeFiles/caso.dir
-C:/Users/victo/Downloads/proyecto concurrida/pcd-equipo5/build/competicion/CMakeFiles/competicion.dir
-C:/Users/victo/Downloads/proyecto concurrida/pcd-equipo5/build/ejemplo/CMakeFiles/ejemplo.dir
