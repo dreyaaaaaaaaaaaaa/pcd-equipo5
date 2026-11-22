@@ -212,7 +212,7 @@ void CentroPedidos::bucleEmpaquetador(int id) {
         // El empaquetador tarda dos milisegundos en preparar cada paquete
         std::this_thread::sleep_for(std::chrono::milliseconds(2));
 
-        _ctx.estadisticas.incrementar("paquetes", 1);
+        _ctx.estadisticas.sumar("paquetes", 1);
         _ctx.vigilante.progreso();
     }
 }
