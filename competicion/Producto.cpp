@@ -49,6 +49,37 @@ std::uint64_t producto(int hilos) {
 
     std::uint64_t inicio4 = fin3;
     std::uint64_t fin4 = N_VALORES; // 2000000
+
+ // Creamos los cuatro hilos.
+    std::thread hilo0([&resultadoHilo0, inicio0, fin0]() {
+        for (std::uint64_t i = inicio0; i < fin0; ++i) {
+            resultadoHilo0 = (resultadoHilo0 * valor(i)) % MODULO;
+        }
+    });
+
+    std::thread hilo1([&resultadoHilo1, inicio1, fin1]() {
+        for (std::uint64_t i = inicio1; i < fin1; ++i) {
+            resultadoHilo1 = (resultadoHilo1 * valor(i)) % MODULO;
+        }
+    });
+
+    std::thread hilo2([&resultadoHilo2, inicio2, fin2]() {
+        for (std::uint64_t i = inicio2; i < fin2; ++i) {
+            resultadoHilo2 = (resultadoHilo2 * valor(i)) % MODULO;
+        }
+    });
+
+    std::thread hilo3([&resultadoHilo3, inicio3, fin3]() {
+        for (std::uint64_t i = inicio3; i < fin3; ++i) {
+            resultadoHilo3 = (resultadoHilo3 * valor(i)) % MODULO;
+        }
+    });
+
+    // Esperamos a que terminen los cuatro hilos.
+    hilo0.join();
+    hilo1.join();
+    hilo2.join();
+    hilo3.join();
     
-// Queda: CALCULAR LOS 4 HILOS Y EL RESULTADO FINAL
+// Queda: EL RESULTADO FINAL
 
