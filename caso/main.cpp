@@ -31,7 +31,7 @@ bool ejecutarSimulacion(const Config& config, Estadisticas& estadisticas, Traza&
     std::vector<Robot> robots;
     robots.reserve(num_robots);
     for (int r = 0; r < num_robots; r++) {
-        robots.emplace_back(r, pasillo);
+        robots.emplace_back(r, ctx, pasillo, centro);
     }
 
     vigilante.iniciar();
