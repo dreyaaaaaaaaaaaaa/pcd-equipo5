@@ -79,5 +79,18 @@ for (int numeroHilo = 0; numeroHilo < numeroHilos; ++numeroHilo) {
     
 }
     
+    // Esperamos a que terminen todos los hilos.
+    for (int numeroHilo = 0; numeroHilo < numeroHilos; ++numeroHilo) {
+        hilosCreados[numeroHilo].join();
+    }
 
+    // Multiplicamos los resultados de todos los hilos.
+    std::uint64_t resultadoFinal = 1;
+
+    for (int numeroHilo = 0; numeroHilo < numeroHilos; ++numeroHilo) {
+        resultadoFinal = (resultadoFinal * resultadosParciales[numeroHilo]) % MODULO;
+    }
+
+    return resultadoFinal;
+}
 
