@@ -6,10 +6,7 @@
 #include <semaphore>
 #include <shared_mutex>
 #include <vector>
-
-#include <chrono>
 #include <queue>
-#include <thread>
 
 class CentroPedidos {
 public:
