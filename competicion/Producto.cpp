@@ -62,36 +62,22 @@ for (int numeroHilo = 0; numeroHilo < numeroHilos; ++numeroHilo) {
     std::uint64_t finalHilo = final;
 
     
- // Creamos los cuatro hilos. NO SIRVE, AFUERA
-    std::thread hilo0([&resultadoHilo0, inicio0, fin0]() {
-        for (std::uint64_t i = inicio0; i < fin0; ++i) {
-            resultadoHilo0 = (resultadoHilo0 * valor(i)) % MODULO;
-        }
-    });
+        // Creamos el hilo y lo guardamos en su posición.
+    hilosCreados[numeroHilo] = std::thread(
+        [&resultadosParciales, numeroHilo, principioHilo, finalHilo]() {
+            std::uint64_t resultadoParcial = 1;
 
-    std::thread hilo1([&resultadoHilo1, inicio1, fin1]() {
-        for (std::uint64_t i = inicio1; i < fin1; ++i) {
-            resultadoHilo1 = (resultadoHilo1 * valor(i)) % MODULO;
-        }
-    });
+            for (std::uint64_t i = principioHilo; i < finalHilo; ++i) {
+                resultadoParcial = (resultadoParcial * valor(i)) % MODULO;
+            }
 
-    std::thread hilo2([&resultadoHilo2, inicio2, fin2]() {
-        for (std::uint64_t i = inicio2; i < fin2; ++i) {
-            resultadoHilo2 = (resultadoHilo2 * valor(i)) % MODULO;
+            resultadosParciales[numeroHilo] = resultadoParcial;
         }
-    });
-
-    std::thread hilo3([&resultadoHilo3, inicio3, fin3]() {
-        for (std::uint64_t i = inicio3; i < fin3; ++i) {
-            resultadoHilo3 = (resultadoHilo3 * valor(i)) % MODULO;
-        }
-    });
-
-    // Esperamos a que terminen los cuatro hilos.
-    hilo0.join();
-    hilo1.join();
-    hilo2.join();
-    hilo3.join();
+    );
+    // El siguiente hilo empieza donde termina este.
+    comienzo = final;
     
-// Queda: EL RESULTADO FINAL
+}
+    
+
 
