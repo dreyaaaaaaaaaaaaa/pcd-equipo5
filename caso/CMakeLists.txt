@@ -3,7 +3,7 @@
 #   2. la lista de ficheros: main.cpp y, de cada una de vuestras 3 clases, su .h y su .cpp
 #      (los .h también, para que el IDE los muestre en el proyecto).
 
-set(NOMBRE_EJECUTABLE caso)   # aeropuerto, cocina, banco, ferrocarril o almacen
+set(NOMBRE_EJECUTABLE almacen)
 
 add_executable(${NOMBRE_EJECUTABLE}
     main.cpp
@@ -13,7 +13,5 @@ add_executable(${NOMBRE_EJECUTABLE}
     Pasillo.cpp
     Robot.h
     Robot.cpp
-    # Clase3.h
-    # Clase3.cpp
 )
 target_link_libraries(${NOMBRE_EJECUTABLE} PRIVATE base semaforo)
