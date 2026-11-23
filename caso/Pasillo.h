@@ -45,7 +45,7 @@ private:
     int _cargadoresLibres;       // Número de cargadores disponibles
     long _ticketSiguiente = 0;       // Ticket siguiente a asignar
     long _ticketAtendido = 0;       // Ticket que se está atendiendo
-    bool _inanicion = false         // Variable para indicar si se ha producido inanición (starvation) en la espera de cargadores.
+    bool _inanicion = false;        // Variable para indicar si se ha producido inanición (starvation) en la espera de cargadores.
     std::set<int> _robotsEsperando; // Conjunto de robots que están esperando para ocupar un cargador.
 
 };
