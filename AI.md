@@ -12,6 +12,7 @@
 - Comprobar si era razonable usar bucles para que cada hilo calculara una parte de los valores y para combinar después los resultados parciales.
 - Entender qué significan las variables entre corchetes de una lambda, como `&resultadosParciales`, `numeroHilo`, `principioHilo` y `finalHilo`.
 - Resolver errores al ejecutar `competicion.exe`: entender que el ejecutable estaba en `build\competicion\Release\` y que había que ejecutarlo desde la terminal con `--comprobar`.
+- Hacer la build con CMake para poder probarlo usando CMD
 
 **Qué se incorporó:** 
 La versión paralelizada de `producto(int hilos)` en `competicion/Producto.cpp`, dividendo los 2.000.000 valores en bloques, calculando un producto parcial por hilo y combinando los resultados módulo `MODULO`. También la comprobación con `.\build\competicion\Release\competicion.exe --comprobar` y la preparación de las mediciones con 1, 2, 4 y 8 hilos.

@@ -133,7 +133,7 @@ Todos: la fila de su monitor en `DISENO.md` antes de programarlo, sus consultas 
   - Solo `std::thread`, mutex, variables de condición y semáforos.
   - Comprobar con `./competicion --comprobar` y compilar en Release.
   - Escribir en `EXPERIMENTOS.md` la mediana con 1, 2, 4 y 8 hilos (y cuántos núcleos tiene el ordenador), con una explicación de esos tiempos.
-  - Indicar en este README con cuántos hilos se mide.
+  - Indicar en este README con cuántos hilos se mide. INDICACIÓN: La competición se ha medido con 1, 2, 4 y 8 hilos.
 - Como es la parte más ligera, también ayuda a revisar `DISENO.md` y el código de los demás.
 - **Hito 1:** buffer y empaquetadores creados y terminando bien con el cierre.
 
