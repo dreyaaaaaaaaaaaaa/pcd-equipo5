@@ -18,6 +18,8 @@ Estado protegido por `Pasillo::_m` (un único mutex para todas las celdas):
 | `_turnoSiguiente` / `_turnoActual` | turnos de la entrada (orden de llegada, FIFO) |
 | `_cvCelda[12]` | en `_cvCelda[c]` espera el robot que quiere ocupar la celda `c` |
 | `_cvEntrada` | esperan los robots que quieren entrar por la celda 0 |
+| `_sinLimite` | `true` con `--fallo interbloqueo` o `--fallo livelock`: no hay límite de robots ni prioridad |
+| `marcarCelda(r, c)` | método privado: apunta la celda y llama a `violacion` si ya estaba ocupada (siempre con `_m` cogido) |
 
 `MAX_DENTRO = CELDAS - 1 = 11`.
 
@@ -69,17 +71,80 @@ Notas:
 - **Livelock.** En la versión correcta nadie retrocede ni reintenta: el que no puede
   avanzar se bloquea en su variable de condición hasta que le avisan.
 
+### Cómo se mueve el robot (Robot::ejecutar)
+
+1. `sacarPedido()`; si devuelve -1, el robot termina.
+2. `entrar()`: espera su turno y ocupa la celda 0.
+3. Vuelta de 12 movimientos. En cada uno: `ocupar(siguiente)`, 1 ms de movimiento y `soltar(actual)`, es decir, la regla 1 tal cual.
+   Se lleva la cuenta con `recorrido` (0..12) porque en el modo livelock el robot puede retroceder.
+4. `dejarProducto()` **antes** de `salir()`: si el buffer está lleno, el robot espera ocupando la celda 0, como pide el enunciado.
+   Esa espera la hace `CentroPedidos`, sin tener cogido `_m`.
+5. Si la batería es < 12: `ocuparCargador()`, 5 ms y `soltarCargador()`. El robot ya está fuera del pasillo,
+   así que nunca tiene a la vez una celda y un cargador.
+
+La batería es un miembro privado de `Robot` y solo la toca su propio hilo, así que no necesita mutex.
+
+### Pruebas
+
+| Orden | Resultado esperado |
+|---|---|
+| `almacen --estres 20` | 20 OK, 0 con invariantes rotos |
+| `almacen --fallo interbloqueo` | el vigilante termina con código 3: con 12 robots dentro, todos esperan al de delante |
+| `almacen --fallo livelock` | el vigilante termina con código 3: `movimientos` sigue subiendo pero `entregas` no |
+
 ### Pasillo — cargadores (Alejandro Castro Espín)
 
-_Pendiente._
+| Operación | Espera mientras… | Quién avisa |
+|---|---|---|
+| `ocuparCargador(r)` — versión correcta | No hay cargadores libres o el ticket del robot no es `_ticketAtendido` | `soltarCargador` libera una plaza y avisa con `_cvCargadores.notify_all()` |
+| `ocuparCargador(r)` — `--fallo inanicion` | No hay plaza libre o el ID del robot no es el menor entre los que esperan | `soltarCargador` libera una plaza y avisa con `_cvCargadores.notify_all()` |
+| `soltarCargador(r)` | No espera | Libera una plaza y avisa a los robots esperando |
 
 ### CentroPedidos (Víctor Díez Sánchez y Vicent David Burgal)
 
+#### Inventario, cola de pedidos y gestor (Víctor Díez Sánchez)
+
+Estado protegido:
+
+| Miembro | Protección | Significado |
+|---|---|---|
+| `_existencias` (6) | `_mInventario` (`std::shared_mutex`) | unidades de cada producto |
+| `_cola` | `_mCola` (`std::mutex`) | pedidos en orden FIFO (-1 = pedido de fin) |
+| `_huecos` | `Semaforo` (empieza en 8) | sitios libres de la cola |
+| `_elementos` | `std::counting_semaphore<8>` (empieza en 0) | pedidos que hay en la cola |
+| `_finGestor` | `_mGestor` + `_cvGestor` | `true` cuando main pide que el gestor termine |
+
+**Versión correcta**
+
+| Operación | Espera mientras… | Quién avisa |
+|---|---|---|
+| `consultar(p)` | — (no espera; `shared_lock`) | — |
+| `reservar(p)` | — (no espera; si `_existencias[p] <= 0` devuelve `false`) | — |
+| `reponer()` | — (no espera; `unique_lock`) | — |
+| `meterPedido(p)` | `_huecos == 0` (cola llena) | `sacarPedido()` → `_huecos.release()` |
+| `sacarPedido()` | `_elementos == 0` (cola vacía) | `meterPedido()` → `_elementos.release()` |
+| `bucleGestor()` | `!_finGestor`, como mucho 5 ms (`wait_for`); si vence el plazo, repone | `avisarGestor()` → `_cvGestor.notify_one()` |
+
+Notas:
+
+- `reservar` comprueba y resta dentro del mismo `unique_lock`, así que nunca se reserva una unidad que no existe. El invariante existencias ≥ 0 se comprueba en `comprobarExistencias` después de cada resta.
+- En la cola se espera primero en el semáforo y después se coge `_mCola`: nadie se duerme con el mutex cogido.
+- `bucleGestor` llama a `reponer()` con `_mGestor` cogido. No hay interbloqueo porque nadie coge `_mInventario` y después `_mGestor`.
+- `_cvGestor` usa `notify_one` porque solo hay un gestor esperando.
+
+**Modo de fallo**
+
+| Modo | Operación | Qué cambia | Efecto |
+|---|---|---|---|
+| `carrera` | `reservar(p)` | comprueba con `consultar` (una sección crítica), hace `yield()` y resta en otra sección crítica sin volver a comprobar | dos generadores pueden reservar la última unidad y las existencias quedan < 0 (se ve con `--existencias 1 --generadores 4`) |
+
+#### Buffer de empaquetado (Vicent David Burgal)
+
 _Pendiente._
 
-## Interfaz pública (propuesta para acordar)
+## Interfaz pública (acordada)
 
-Pedido = `int` con el número de producto (0..5); `CentroPedidos::FIN` (-1) es el pedido de fin.
+Pedido = `int` con el número de producto (0..5); -1 es el pedido de fin (lo mete `meterFin()`).
 Así no hace falta una cuarta clase.
 
 ```cpp
@@ -104,8 +169,7 @@ public:
 
 class CentroPedidos {
 public:
-    static constexpr int FIN = -1;
-    int sacarPedido();                         // bloquea si la cola está vacía; FIN = terminar
+    int sacarPedido();                         // bloquea si la cola está vacía; -1 = terminar
     void dejarProducto(int producto);              // bloquea si el buffer de empaquetado está lleno
     // ... resto: generadores, gestor, empaquetadores
 };
