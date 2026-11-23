@@ -106,7 +106,7 @@ void Pasillo::ocuparCargador(int robot)        //Demomento no vamos a usar el id
             return !_robotsEsperando.empty()        // Comprueba que haya robots esperando antes de consultar el primero.
                 && *_robotsEsperando.begin() == robot;     // Comprueba que el robot con el ID más bajo sea este robot.
         }
-        return miTicket == _ticketAtendido       // En el modo normal, comprueba si este robot tiene el siguiente turno FIFO.
+        return miTicket == _ticketAtendido;       // En el modo normal, comprueba si este robot tiene el siguiente turno FIFO.
     });
 
     --_cargadoresLibres;      // El robot tiene turno y plaza, le resamos esa para que salga ocupada
