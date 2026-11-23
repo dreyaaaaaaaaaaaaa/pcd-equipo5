@@ -45,3 +45,21 @@ La versión paralelizada de `producto(int hilos)` en `competicion/Producto.cpp`,
 **Qué se descartó:** nada de momento.
 
 **Ficheros:** caso/Pasillo.h, caso/Pasillo.cpp, caso/Robot.h, caso/Robot.cpp, caso/main.cpp, DISENO.md, AI.md.
+
+---
+
+## 2026-11-18 a 2026-11-23 — Álvaro Rovira de las Heras — Semaforo, prueba_semaforo y main del caso
+
+**Herramienta:** Claude Code (Claude Sonnet 5.5).
+
+**Para qué la he usado:**
+- Entender cerrojos, variables de condición y semáforos, y cómo está montado el proyecto y mi parte, porque llevaba meses sin seguir las clases.
+- El código de `Semaforo.cpp` (`acquire`, `release` y `tryAcquireFor`) lo he hecho con ayuda de la IA, que me explicó cada línea. Los comentarios son míos y me corrigió dos que estaban mal.
+- Comprobar que compila y funciona, y redactar con salidas reales la sección de `--estres 10` de `EXPERIMENTOS.md` y la de compilar y ejecutar del `README.md`.
+- Hacer mis commits y push desde mi usuario de git, siempre después de pedírselo yo.
+
+**Qué se incorporó:** las tres funciones de `Semaforo.cpp`, `prueba_semaforo/main.cpp`, `caso/main.cpp`, el nombre `almacen` en `caso/CMakeLists.txt` y las secciones de `EXPERIMENTOS.md` y `README.md` que he añadido.
+
+**Qué se descartó:** mi primer `tryAcquireFor`, que no esperaba el plazo.
+
+**Ficheros:** semaforo/Semaforo.cpp, prueba_semaforo/main.cpp, caso/main.cpp, caso/CMakeLists.txt, EXPERIMENTOS.md, README.md, AI.md.
