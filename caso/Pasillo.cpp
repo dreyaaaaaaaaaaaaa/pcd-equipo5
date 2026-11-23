@@ -9,7 +9,8 @@
 //CONSTRUCTOR
 Pasillo::Pasillo(const Contexto& ctx, int cargadores)
     : _ctx(ctx),
-      _cargadoresLibres(cargadores) {   // empiezan todos los cargadores libres
+    _sinLimite(ctx.config.fallo("interbloqueo") || ctx.config.fallo("livelock")),   // en estos modos no hay limite
+    _cargadoresLibres(cargadores) {   // empiezan todos los cargadores libres
     _celdas.fill(LIBRE);                // y todas las celdas vacias
 }
 
@@ -28,9 +29,13 @@ void Pasillo::entrar(int robot) {
     std::unique_lock<std::mutex> lk(_m);
     const long miTurno = _turnoSiguiente++; // cojo numero, se entra por orden de llegada
     _cvEntrada.wait(lk, [this, miTurno] {
-        return miTurno == _turnoActual            // es mi turno
-            && _dentro < MAX_DENTRO               // hay sitio (como mucho 11 dentro)
-            && _celdas[0] == LIBRE                // la entrada esta libre
+        if (miTurno != _turnoActual || _celdas[0] != LIBRE) {
+            return false;                         // no es mi turno o la entrada esta ocupada
+        }
+        if (_sinLimite) {
+            return true;                          // MODO INTERBLOQUEO: entro aunque esten los 12 dentro
+        }
+        return _dentro < MAX_DENTRO               // hay sitio (como mucho 11 dentro)
             && _celdas[CELDAS - 1] == LIBRE;      // y no viene nadie por la 11 (el de dentro tiene prioridad)
     });
     marcarCelda(robot, 0);
@@ -59,6 +64,15 @@ void Pasillo::soltar(int robot, int celda) {
         if (celda == 0 || celda == CELDAS - 1) {
         _cvEntrada.notify_all();            // la 0 o la 11 han quedado libres, a lo mejor alguien puede entrar
     }
+}
+
+bool Pasillo::intentarOcupar(int robot, int celda) {
+    std::lock_guard<std::mutex> lk(_m);
+    if (_celdas[celda] != LIBRE) {
+        return false;                       // ocupada: no espero, le digo al robot que no ha podido
+    }
+    marcarCelda(robot, celda);
+    return true;
 }
 
 void Pasillo::salir(int robot) {

@@ -1,4 +1,5 @@
 #include "Robot.h"
+#include "Config.h"
 #include "Estadisticas.h"
 #include "Traza.h"
 #include "Vigilante.h"
@@ -8,6 +9,7 @@
 
 Robot::Robot(int id, const Contexto& ctx, Pasillo& pasillo, CentroPedidos& centro):     //// Define el constructor de robot
     _id(id),        //Define el identificador de robot
+    _livelock(ctx.config.fallo("livelock")),    // ¿se ha pasado --fallo livelock?
     _ctx(ctx),      //el contexto (estadisticas, traza, vigilante)
     _pasillo(pasillo),       //Define la referencia al pasillo compartido que usará el robot
     _centro(centro) {}      //el centro de pedidos
@@ -29,12 +31,31 @@ void Robot::ejecutar() {
         _ctx.traza.evento(yo, "entra al pasillo a por el producto " + std::to_string(producto));
 
         // c. vuelta entera: 12 movimientos hasta volver a la celda 0
-        for (int paso = 0; paso < Pasillo::CELDAS; paso++) {
+        int recorrido = 0;          // cuantas celdas llevo avanzadas desde la 0 (la vuelta acaba en 12)
+        while (recorrido < Pasillo::CELDAS) {
             int siguiente = (celda + 1) % Pasillo::CELDAS;
-            _pasillo.ocupar(_id, siguiente);        // primero ocupo la siguiente
+
+            if (!_livelock) {
+                _pasillo.ocupar(_id, siguiente);    // primero ocupo la siguiente (espero si esta ocupada)
+            } else if (!_pasillo.intentarOcupar(_id, siguiente)) {
+                // MODO LIVELOCK: la siguiente esta ocupada, me echo atras si puedo
+                int anterior = (celda + Pasillo::CELDAS - 1) % Pasillo::CELDAS;
+                if (recorrido > 0 && _pasillo.intentarOcupar(_id, anterior)) {
+                    std::this_thread::sleep_for(std::chrono::milliseconds(1));     // retroceder tambien es un movimiento
+                    _pasillo.soltar(_id, celda);
+                    celda = anterior;
+                    recorrido--;
+                    _bateria--;
+                    _ctx.estadisticas.sumar("movimientos", 1);
+                }
+                std::this_thread::sleep_for(std::chrono::milliseconds(2));         // espero 2 ms, igual que todos
+                continue;                                                           // y lo vuelvo a intentar
+            }
+
             std::this_thread::sleep_for(std::chrono::milliseconds(1));     // el movimiento tarda 1 ms
             _pasillo.soltar(_id, celda);            // y luego suelto la que tenia
             celda = siguiente;
+            recorrido++;
             _bateria--;
             _ctx.estadisticas.sumar("movimientos", 1);
 
