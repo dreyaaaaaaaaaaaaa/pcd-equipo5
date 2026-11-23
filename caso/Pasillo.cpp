@@ -26,11 +26,17 @@ void Pasillo::marcarCelda(int robot, int celda) {
 
 void Pasillo::entrar(int robot) {
     std::unique_lock<std::mutex> lk(_m);
-    _cvEntrada.wait(lk, [this] {            // espero mientras el pasillo este lleno o la celda 0 ocupada
-        return _dentro < MAX_DENTRO && _celdas[0] == LIBRE;
+    const long miTurno = _turnoSiguiente++; // cojo numero, se entra por orden de llegada
+    _cvEntrada.wait(lk, [this, miTurno] {
+        return miTurno == _turnoActual            // es mi turno
+            && _dentro < MAX_DENTRO               // hay sitio (como mucho 11 dentro)
+            && _celdas[0] == LIBRE                // la entrada esta libre
+            && _celdas[CELDAS - 1] == LIBRE;      // y no viene nadie por la 11 (el de dentro tiene prioridad)
     });
     marcarCelda(robot, 0);
     _dentro++;
+    _turnoActual++;                         // paso el turno al siguiente
+    _cvEntrada.notify_all();                // para que el del siguiente turno lo compruebe
 }
 
 void Pasillo::ocupar(int robot, int celda) {
@@ -47,8 +53,8 @@ void Pasillo::soltar(int robot, int celda) {
         _celdas[celda] = LIBRE;
     }
     _cvCelda[celda].notify_one();           // aviso al robot de detras, que es el unico que puede querer esta celda
-    if (celda == 0) {
-        _cvEntrada.notify_all();            // la celda 0 ha quedado libre, a lo mejor alguien puede entrar
+        if (celda == 0 || celda == CELDAS - 1) {
+        _cvEntrada.notify_all();            // la 0 o la 11 han quedado libres, a lo mejor alguien puede entrar
     }
 }
 
