@@ -27,6 +27,77 @@ Un pasillo circular de 12 celdas donde robots recogen productos de las estanter�
 - **Modos de fallo:** `carrera`, `interbloqueo`, `livelock` e `inanicion`.
 - **Experimento:** `--robots 4`, `8` y `12` → entregas por segundo.
 
+## como compilar y ejecutar el caso
+
+hace falta cmake 3.16 o superior y un compilador de c++20: g++, clang o visual studio.
+
+### compilar
+
+desde la carpeta del proyecto:
+
+```
+cmake -S . -B build
+cmake --build build
+```
+
+por defecto compila en Release, que es el modo para medir. en visual studio se elige la configuracion Release, o desde la terminal `cmake --build build --config Release`.
+
+el ejecutable del caso se llama `almacen`:
+
+- linux y mac: `./build/caso/almacen`
+- windows: `.\build\caso\Release\almacen.exe`
+
+### ejecutar
+
+las opciones se pasan con la forma `--clave valor`. si no se pasa una, se usa su valor por defecto.
+
+| opcion | que es | por defecto |
+|---|---|---|
+| `--robots` | numero de robots | 12 |
+| `--cargadores` | plazas de carga | 2 |
+| `--existencias` | unidades iniciales de cada producto | 3 |
+| `--generadores` | generadores de pedidos | 2 |
+| `--pedidos` | pedidos que intenta crear cada generador | 30 |
+| `--empaquetadores` | empaquetadores | 2 |
+
+opciones que valen para todos los ejecutables:
+
+| opcion | para que sirve |
+|---|---|
+| `--fallo modo` | activa un modo de fallo: `carrera`, `interbloqueo`, `livelock` o `inanicion` |
+| `--estres N` | repite la simulacion N veces con la misma configuracion |
+| `--traza` | escribe el orden real de los eventos |
+| `--vigilante ms` | milisegundos sin progreso antes de que el vigilante corte el programa, por defecto 2000 |
+| `--ayuda` | muestra las opciones y los modos de fallo |
+
+si se escribe una opcion que no existe, el programa avisa y termina con codigo 2.
+
+### ordenes habituales
+
+| orden | para que sirve |
+|---|---|
+| `./build/caso/almacen` | una ejecucion con los valores por defecto |
+| `./build/caso/almacen --robots 1 --generadores 1 --pedidos 5` | la configuracion minima, para las primeras pruebas |
+| `./build/caso/almacen --robots 8` | cambiar el numero de robots, que es el experimento del caso |
+| `./build/caso/almacen --traza --robots 1 --pedidos 2 --generadores 1` | ver el orden de los eventos con pocos hilos |
+| `./build/caso/almacen --estres 10` | repetir 10 veces la version correcta |
+| `./build/caso/almacen --fallo carrera --existencias 1 --generadores 4 --estres 10` | ver el modo carrera romper el invariante |
+| `./build/caso/almacen --fallo interbloqueo` | ver como el vigilante corta el programa |
+
+### codigo de salida
+
+| codigo | significado |
+|---|---|
+| 0 | todo correcto |
+| 1 | se ha roto algun invariante |
+| 2 | opcion o modo de fallo desconocido |
+| 3 | el vigilante ha detectado que no hay progreso |
+
+### otros ejecutables
+
+- `./build/prueba_semaforo/prueba_semaforo` prueba la clase `Semaforo` y debe imprimir `OK`.
+- `./build/competicion/competicion --hilos 4 --veces 5 --comprobar` ejecuta la competicion. en windows la ruta lleva `Release` como la del caso.
+
 ## Qué hay que hacer
 
 1. Partir del **código base** del profesor (sin modificar `base/`) y compilar sin avisos (`-Wall -Wextra -Wpedantic`) en g++, clang y Visual Studio.
