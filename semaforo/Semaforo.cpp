@@ -17,15 +17,15 @@ void Semaforo::release() {
 }
 
 bool Semaforo::tryAcquireFor(std::chrono::milliseconds timeout) {
-    std::unique_lock<std::mutex> lock(_m);
-    auto limite = std::chrono::steady_clock::now() + timeout;
-    while (_valor <= 0) {
-        if (_cv.wait_until(lock, limite) == std::cv_status::timeout) {
-            if (_valor <= 0) {
-                return false;
+    std::unique_lock<std::mutex> lock(_m); //lock coge el cerrojo _m
+    auto limite = std::chrono::steady_clock::now() + timeout; //se calcula la hora limite con la actual mas timeout
+    while (_valor <= 0) { //mientras no haya permisos
+        if (_cv.wait_until(lock, limite) == std::cv_status::timeout) { //igual que wait pero solo hasta la hora limite, entra si se ha acabado el tiempo
+            if (_valor <= 0) { //se mira una ultima vez si hay permiso por si ha llegado justo ahora
+                return false; //devuelve false porque no se ha conseguido el permiso a tiempo
             }
         }
     }
-    --_valor;
-    return true;
+    --_valor; //se resta 1 al valor
+    return true; //se ha conseguido el permiso, devuelve true
 }
