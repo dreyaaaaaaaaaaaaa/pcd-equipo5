@@ -18,7 +18,7 @@ La versión paralelizada de `producto(int hilos)` en `competicion/Producto.cpp`,
 
 **Qué se descartó:** Una versión que usaba un número concreto de hilos, porque no se adaptaba bien a otros valores. También se descartó usar `float` o `double`, porque pueden perder precisión en el cálculo.
 
-**Ficheros:** competicion/Producto.cpp, EXPERIMENTOS.md, README.md, DISENO.md, IA.md.
+**Ficheros:** competicion/Producto.cpp, EXPERIMENTOS.md, README.md, IA.md.
 
 ---
 
