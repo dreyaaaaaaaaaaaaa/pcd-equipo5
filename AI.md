@@ -88,3 +88,33 @@ La versión paralelizada de `producto(int hilos)` en `competicion/Producto.cpp`,
 **Qué se descartó:** `std::deque`, constantes `static const` y trazas, porque no aparecen en el código base. Tampoco se cambió el código del modo carrera: se documenta con qué configuración se ve.
 
 **Ficheros:** caso/CentroPedidos.h, caso/CentroPedidos.cpp, DISENO.md, EXPERIMENTOS.md, AI.md.
+
+
+
+---
+
+## 2026-11-21 a 2026-11-23 — Alejandro Castro Espín — Pasillo: monitor de cargadores
+
+**Herramienta:** ChatGPT / Codex.
+
+**Para qué la he usado:**
+
+- Ver qué temas de la asignatura entran en mi parte:- Tema 3 (hilos): cada robot ejecuta su trabajo en un hilo y solicita cargar cuando su batería queda por debajo de 12 movimientos.
+- Tema 4 (carreras y atomicidad): el número de plazas libres y los turnos deben actualizarse de forma protegida para que dos robots no reserven la misma plaza.
+- Tema 5 (exclusión mutua con RAII): el mutex del monitor protege el estado de los cargadores. Debo asegurar que los cerrojos se liberen mediante RAII, sin llamar a `unlock()` manualmente.
+- Tema 7 (monitores y variables de condición): Pasillo gestiona los cargadores con un mutex, una variable de condición y tickets para atender a los robots por orden de llegada.
+- Tema 8 (inanición): el modo `--fallo` inanicion entrega la plaza libre al robot de menor número que esté esperando, para mostrar cómo aumenta su tiempo máximo de espera.
+- Entender cómo hacer que los cargadores se asignen por tickets en orden de llegada y cómo activar el modo inanicion para dar prioridad al robot de menor número que esté esperando.
+
+- Corregir errores de compilación en `Pasillo.h` y `Pasillo.cpp`, como un punto y coma que faltaba, un nombre de variable mal escrito y el cierre de la espera con condición.
+
+- Entender cómo registrar la espera del cargador en las estadísticas y cómo liberar el mutex usando el ámbito de `unique_lock`, sin llamar a `unlock()` manualmente.
+
+- Averiguar por qué no se podía ejecutar `almacen.exe`: Windows mostró que una directiva de Control de aplicaciones bloqueaba el programa.
+
+**Qué se incorporó:**  dos funciones de `Pasillo.cpp`, Los nombres de `Pasillo` y `Robot`  en `caso/CMakeLists.txt` y las secciones de `EXPERIMENTOS.md` y `README.md` que he añadido.
+
+
+**Qué se descartó:** la llamada manual a `lock.unlock()`, porque el mutex se libera automáticamente al salir de la sección protegida. 
+
+**Ficheros:** caso/Pasillo.h, caso/Pasillo.cpp, DISENO.md. EXPERIMENTOS.md, AI.md, caso/Robot.h, caso/Robot.cpp
