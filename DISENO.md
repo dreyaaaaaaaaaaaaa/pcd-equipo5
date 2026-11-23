@@ -94,7 +94,11 @@ La batería es un miembro privado de `Robot` y solo la toca su propio hilo, así
 
 ### Pasillo — cargadores (Alejandro Castro Espín)
 
-_Pendiente._
+| Operación | Espera mientras… | Quién avisa |
+|---|---|---|
+| `ocuparCargador(r)` — versión correcta | No hay cargadores libres o el ticket del robot no es `_ticketAtendido` | `soltarCargador` libera una plaza y avisa con `_cvCargadores.notify_all()` |
+| `ocuparCargador(r)` — `--fallo inanicion` | No hay plaza libre o el ID del robot no es el menor entre los que esperan | `soltarCargador` libera una plaza y avisa con `_cvCargadores.notify_all()` |
+| `soltarCargador(r)` | No espera | Libera una plaza y avisa a los robots esperando |
 
 ### CentroPedidos (Víctor Díez Sánchez y Vicent David Burgal)
 
