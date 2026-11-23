@@ -102,6 +102,8 @@ La batería es un miembro privado de `Robot` y solo la toca su propio hilo, así
 
 ### CentroPedidos (Víctor Díez Sánchez y Vicent David Burgal)
 
+| Buffer de empaquetado | Buffer FIFO `productosPendientes` de capacidad 4 | El buffer nunca contiene más de 4 productos y los productos salen en el mismo orden en que entraron | `dejarProducto()`, `cogerProducto()`, `cerrarEmpaquetado()` |
+
 #### Inventario, cola de pedidos y gestor (Víctor Díez Sánchez)
 
 Estado protegido:
@@ -140,7 +142,17 @@ Notas:
 
 #### Buffer de empaquetado (Vicent David Burgal)
 
-_Pendiente._
+### Buffer de empaquetado
+
+El buffer de empaquetado es un monitor FIFO con capacidad 4
+
+- El robot deja un producto en el buffer
+- Si el buffer está lleno, el robot espera
+- El empaquetador saca un producto del buffer
+- Si el buffer está vacío, el empaquetador espera
+- Al cerrar el buffer, los empaquetadores terminan cuando ya no quedan productos
+
+Detalle: El buffer nunca contiene más de 4 productos y los productos salen en el mismo orden en que entraron
 
 ## Interfaz pública (acordada)
 

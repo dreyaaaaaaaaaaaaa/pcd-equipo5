@@ -112,6 +112,16 @@ si se escribe una opcion que no existe, el programa avisa y termina con codigo 2
    - `IA.md`: registro completo de todo uso de herramientas de IA.
    - `README.md`: cómo ejecutar el caso y con cuántos hilos se mide la competición.
 
+  ## Competición
+
+Para ejecutar la comprobación:
+
+```cmd
+.\build\competicion\Release\competicion.exe --comprobar
+```
+
+La competición se ha medido con 1, 2, 4 y 8 hilos
+
 ## Reparto
 
 Ordenado de la parte más compleja a la menos compleja.
@@ -204,7 +214,7 @@ Todos: la fila de su monitor en `DISENO.md` antes de programarlo, sus consultas 
   - Solo `std::thread`, mutex, variables de condición y semáforos.
   - Comprobar con `./competicion --comprobar` y compilar en Release.
   - Escribir en `EXPERIMENTOS.md` la mediana con 1, 2, 4 y 8 hilos (y cuántos núcleos tiene el ordenador), con una explicación de esos tiempos.
-  - Indicar en este README con cuántos hilos se mide. INDICACIÓN: La competición se ha medido con 1, 2, 4 y 8 hilos.
+  - Indicar en este README con cuántos hilos se mide.
 - Como es la parte más ligera, también ayuda a revisar `DISENO.md` y el código de los demás.
 - **Hito 1:** buffer y empaquetadores creados y terminando bien con el cierre.
 

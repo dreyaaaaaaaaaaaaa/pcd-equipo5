@@ -1,33 +1,33 @@
-Tras ejecutar .\build\competicion\Release\competicion.exe --comprobar sale:
+Tras ejecutar build\competicion\Release\competicion.exe --comprobar sale:
 
-medici├│n 1: 3880.9 ms
+medición 1: 3738.52 ms
 resultado: 521537800
-hilos: 1   mediana: 3880.9 ms
+hilos: 1   mediana: 3738.52 ms
 correcto:  521537800   OK
 
-Tras .\build\competicion\Release\competicion.exe --hilos 1:
+Tras build\competicion\Release\competicion.exe --hilos 1:
 
-medici├│n 1: 3940.41 ms
+medición 1: 3859.71 ms
 resultado: 521537800
-hilos: 1   mediana: 3940.41 ms
+hilos: 1   mediana: 3859.71 ms
 
-Tras .\build\competicion\Release\competicion.exe --hilos 2:
+Tras build\competicion\Release\competicion.exe --hilos 2:
 
-medici├│n 1: 2835.68 ms
+medición 1: 2833.24 ms
 resultado: 521537800
-hilos: 2   mediana: 2835.68 ms
+hilos: 2   mediana: 2833.24 ms
 
-Tras .\build\competicion\Release\competicion.exe --hilos 4:
+Tras build\competicion\Release\competicion.exe --hilos 4:
 
-medici├│n 1: 1698.16 ms
+medición 1: 1651.78 ms
 resultado: 521537800
-hilos: 4   mediana: 1698.16 ms
+hilos: 4   mediana: 1651.78 ms
 
-Tras .\build\competicion\Release\competicion.exe --hilos 8:
+Tras build\competicion\Release\competicion.exe --hilos 8:
 
-medici├│n 1: 882.687 ms
+medición 1: 936.158 ms
 resultado: 521537800
-hilos: 8   mediana: 882.687 ms
+hilos: 8   mediana: 936.158 ms
 
 ## Experimento de la competición
 
