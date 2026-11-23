@@ -34,7 +34,10 @@ void Pasillo::entrar(int robot) {
 }
 
 void Pasillo::ocupar(int robot, int celda) {
-    std::lock_guard<std::mutex> lk(_m);     // candado de las celdas
+    std::unique_lock<std::mutex> lk(_m);    // unique_lock porque wait tiene que poder soltarlo
+    _cvCelda[celda].wait(lk, [this, celda] {    // espero mientras la celda este ocupada
+        return _celdas[celda] == LIBRE;
+    });
     marcarCelda(robot, celda);
 }
 
@@ -43,6 +46,7 @@ void Pasillo::soltar(int robot, int celda) {
     if (_celdas[celda] == robot) {          // solo la libero si de verdad es mia
         _celdas[celda] = LIBRE;
     }
+    _cvCelda[celda].notify_one();           // aviso al robot de detras, que es el unico que puede querer esta celda
     if (celda == 0) {
         _cvEntrada.notify_all();            // la celda 0 ha quedado libre, a lo mejor alguien puede entrar
     }
@@ -54,5 +58,6 @@ void Pasillo::salir(int robot) {
         _celdas[0] = LIBRE;
     }
     _dentro--;                              // un robot menos dentro
+    _cvCelda[0].notify_one();               // aviso al robot de la celda 11, que quiere la 0
     _cvEntrada.notify_all();                // hay sitio y la celda 0 esta libre
 }
