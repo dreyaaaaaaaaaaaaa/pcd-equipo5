@@ -30,7 +30,7 @@ std::uint64_t producto(int hilos) {
     }
 
 // No creamos más hilos que valores.
-int numeroHilos = hilos;
+std::uint64_t numeroHilos = static_cast<std::uint64_t>(hilos); // Hacemos la conversión a uint64_t para evitar problemas de tipo.
 
     if (numeroHilos > N_VALORES) {
         numeroHilos = N_VALORES;
