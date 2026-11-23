@@ -98,6 +98,44 @@ _Pendiente._
 
 ### CentroPedidos (Víctor Díez Sánchez y Vicent David Burgal)
 
+#### Inventario, cola de pedidos y gestor (Víctor Díez Sánchez)
+
+Estado protegido:
+
+| Miembro | Protección | Significado |
+|---|---|---|
+| `_existencias` (6) | `_mInventario` (`std::shared_mutex`) | unidades de cada producto |
+| `_cola` | `_mCola` (`std::mutex`) | pedidos en orden FIFO (-1 = pedido de fin) |
+| `_huecos` | `Semaforo` (empieza en 8) | sitios libres de la cola |
+| `_elementos` | `std::counting_semaphore<8>` (empieza en 0) | pedidos que hay en la cola |
+| `_finGestor` | `_mGestor` + `_cvGestor` | `true` cuando main pide que el gestor termine |
+
+**Versión correcta**
+
+| Operación | Espera mientras… | Quién avisa |
+|---|---|---|
+| `consultar(p)` | — (no espera; `shared_lock`) | — |
+| `reservar(p)` | — (no espera; si `_existencias[p] <= 0` devuelve `false`) | — |
+| `reponer()` | — (no espera; `unique_lock`) | — |
+| `meterPedido(p)` | `_huecos == 0` (cola llena) | `sacarPedido()` → `_huecos.release()` |
+| `sacarPedido()` | `_elementos == 0` (cola vacía) | `meterPedido()` → `_elementos.release()` |
+| `bucleGestor()` | `!_finGestor`, como mucho 5 ms (`wait_for`); si vence el plazo, repone | `avisarGestor()` → `_cvGestor.notify_one()` |
+
+Notas:
+
+- `reservar` comprueba y resta dentro del mismo `unique_lock`, así que nunca se reserva una unidad que no existe. El invariante existencias ≥ 0 se comprueba en `comprobarExistencias` después de cada resta.
+- En la cola se espera primero en el semáforo y después se coge `_mCola`: nadie se duerme con el mutex cogido.
+- `bucleGestor` llama a `reponer()` con `_mGestor` cogido. No hay interbloqueo porque nadie coge `_mInventario` y después `_mGestor`.
+- `_cvGestor` usa `notify_one` porque solo hay un gestor esperando.
+
+**Modo de fallo**
+
+| Modo | Operación | Qué cambia | Efecto |
+|---|---|---|---|
+| `carrera` | `reservar(p)` | comprueba con `consultar` (una sección crítica), hace `yield()` y resta en otra sección crítica sin volver a comprobar | dos generadores pueden reservar la última unidad y las existencias quedan < 0 (se ve con `--existencias 1 --generadores 4`) |
+
+#### Buffer de empaquetado (Vicent David Burgal)
+
 _Pendiente._
 
 ## Interfaz pública (acordada)

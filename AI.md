@@ -45,3 +45,46 @@ La versión paralelizada de `producto(int hilos)` en `competicion/Producto.cpp`,
 **Qué se descartó:** nada de momento.
 
 **Ficheros:** caso/Pasillo.h, caso/Pasillo.cpp, caso/Robot.h, caso/Robot.cpp, caso/main.cpp, DISENO.md, AI.md.
+
+---
+
+## 2026-11-18 a 2026-11-23 — Álvaro Rovira de las Heras — Semaforo, prueba_semaforo y main del caso
+
+**Herramienta:** Claude Code (Claude Sonnet 5.5).
+
+**Para qué la he usado:**
+- Entender cerrojos, variables de condición y semáforos, y cómo está montado el proyecto.
+- El código de `Semaforo.cpp` (`acquire`, `release` y `tryAcquireFor`) lo he hecho con ayuda de la IA, que me explicó cada línea. Los comentarios son míos y me corrigió dos que estaban mal.
+- Comprobar que compila y funciona, y redactar con salidas reales la sección de `--estres 10` de `EXPERIMENTOS.md` y la de compilar y ejecutar del `README.md`.
+- Hacer mis commits y push desde mi usuario de git, siempre después de pedírselo yo.
+
+**Qué se incorporó:** las tres funciones de `Semaforo.cpp`, `prueba_semaforo/main.cpp`, `caso/main.cpp`, el nombre `almacen` en `caso/CMakeLists.txt` y las secciones de `EXPERIMENTOS.md` y `README.md` que he añadido.
+
+**Qué se descartó:** mi primer `tryAcquireFor`, que no esperaba el plazo.
+
+**Ficheros:** semaforo/Semaforo.cpp, prueba_semaforo/main.cpp, caso/main.cpp, caso/CMakeLists.txt, EXPERIMENTOS.md, README.md, AI.md.
+
+
+
+---
+
+## 2026-11-23 — Víctor Díez Sánchez — CentroPedidos: inventario, cola de pedidos, generador, gestor y modo carrera
+
+**Herramienta:** Claude (claude.ai).
+
+**Para qué la he usado:**
+- Organizar cómo empezar mi parte: qué me tocaba según el enunciado y el reparto, qué iba al hito 1 y en qué commits dividirlo.
+- Ver qué temas de la asignatura entran en mi parte:
+  - Tema 3 (hilos): el generador y el gestor son hilos, y `bucleGenerador` y `bucleGestor` son su cuerpo.
+  - Tema 4 (carreras y exclusión mutua con RAII): el inventario protegido con `shared_mutex`, comprobando y reservando en la misma sección crítica, y el modo `carrera`, que lo hace en dos secciones distintas.
+  - Tema 5 (semáforos): la cola de pedidos, con los huecos en nuestro `Semaforo` y los pedidos en `std::counting_semaphore`, siempre el semáforo antes que el mutex.
+  - Tema 6 (monitores): el gestor, que espera con `wait_for` y se despierta al momento con `notify_one` en vez de usar `sleep`.
+- Entender por qué con la configuración por defecto el modo `carrera` casi no falla: con (7g + k) mod 6, los generadores piden productos distintos en el mismo paso.
+- Revisar mis ficheros antes de subirlos y recuperar los métodos que perdí en un conflicto al guardar.
+- El código de mi parte, que he escrito yo commit a commit a partir de lo que me dio la IA, ajustándolo para usar solo lo que aparece en el código base del profesor.
+
+**Qué se incorporó:** `CentroPedidos` con el inventario, la cola de pedidos, el generador, el gestor y el modo `carrera`, que se ve con `--existencias 1 --generadores 4` (2 OK y 8 con invariantes rotos en `--estres 10`). También mi tabla de `DISENO.md` y mi apartado de `EXPERIMENTOS.md`.
+
+**Qué se descartó:** `std::deque`, constantes `static const` y trazas, porque no aparecen en el código base. Tampoco se cambió el código del modo carrera: se documenta con qué configuración se ve.
+
+**Ficheros:** caso/CentroPedidos.h, caso/CentroPedidos.cpp, DISENO.md, EXPERIMENTOS.md, AI.md.

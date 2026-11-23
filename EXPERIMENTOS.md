@@ -159,3 +159,30 @@ en el modo carrera el generador mira si hay existencias, suelta el candado y lue
 con menos existencias y mas generadores peleando por ellas, es mas facil que dos coincidan en ese hueco. con 1 existencia y 4 generadores casi siempre falla, y con la configuracion por defecto solo de vez en cuando.
 
 que una ejecucion salga bien no prueba que el programa este bien. por eso se repite con --estres.
+
+
+
+
+## Modo carrera
+
+    almacen --fallo carrera --existencias 1 --generadores 4 --estres 10
+
+    ejecución 1 de 10: INVARIANTE ROTO -> existencias < 0
+    ejecución 2 de 10: INVARIANTE ROTO -> existencias < 0
+    ejecución 3 de 10: INVARIANTE ROTO -> existencias < 0
+    ejecución 5 de 10: INVARIANTE ROTO -> existencias < 0
+    ejecución 6 de 10: INVARIANTE ROTO -> existencias < 0
+    ejecución 7 de 10: INVARIANTE ROTO -> existencias < 0
+    ejecución 8 de 10: INVARIANTE ROTO -> existencias < 0
+    ejecución 9 de 10: INVARIANTE ROTO -> existencias < 0
+
+    --estres 10: 2 OK, 8 con invariantes rotos (misma configuración en todas).
+
+Con la configuración por defecto (2 generadores y 3 existencias) casi nunca falla,
+porque con la fórmula (7g + k) mod 6 los generadores piden productos distintos en
+el mismo paso y el gestor repone cada 5 ms. Con 1 existencia y 4 generadores es
+mucho más fácil que dos vayan a la vez a por la última unidad.
+
+Falla unas veces sí y otras no porque depende del orden en que el sistema operativo
+ejecuta los hilos: solo falla si un generador entra justo entre la consulta y la
+resta del otro.
