@@ -87,35 +87,36 @@ void Pasillo::salir(int robot) {
 }
 
 
-void Pasillo::ocuparCargador(int robot){        //Demomento no vamos a usar el identificador ya que mas adelante nos servira para
-                                                //escribir una traza que indique que el robot ha pedido un cargador
+void Pasillo::ocuparCargador(int robot)        //Demomento no vamos a usar el identificador ya que mas adelante nos servira para
+{                                              //escribir una traza que indique que el robot ha pedido un cargador
 
-    const auto inicio = std::chrono::steady_clock::now();}      //Se gurda donde empieza la espera antes de pedir el mutex para ver cuanto tiempo tarda tambien el robot esperando su turno
-    
+    const auto inicio = std::chrono::steady_clock::now();      //Se gurda donde empieza la espera antes de pedir el mutex para ver cuanto tiempo tarda tambien el robot esperando su turno
+    {
     std::unique_lock<std::mutex> lock(_mCargadores);        //Bloque el mutex para proteger los datos compartidos de cargadores
     const long miTicket = _ticketSiguiente++;       //Cada robot recibe un numero y el contador aumenta ahsta que el robot reciba otro ticket
 
     if (_inanicion){        //Si está activado el modo de fallo "inanicion", añade el robot al conjunto de robots que esperan un cargador.
-        _robotsEsperando.insert(robot);{        // Añade el ID del robot al conjunto de robots que esperan un cargador.
-    
+        _robotsEsperando.insert(robot);        // Añade el ID del robot al conjunto de robots que esperan un cargador.
+    }
     _cvCargadores.wait(lock, [this, miTicket, robot]{      //Robot espera hasta que su ticket sea el siguiente y que haya un cargador libre wait libera el mutex y lo vuelve a bloquear 
         if (_cargadoresLlibres == 0) {       //Si no hay cargadores libres, el robot se queda esperando
-            return false;}  
-        
+            return false;  
+        }
         if (_inanicion) {        //Si el modo de fallo "inanicion" esta activado, se comprueba si hay robots con tickets menores que el del robot actual
             return !_robotsEsperando.empty()        // Comprueba que haya robots esperando antes de consultar el primero.
-                && *_robotsEsperando.begin() == robot;}     // Comprueba que el robot con el ID más bajo sea este robot.
-
-        return miTicket == _ticketAtendido });      // En el modo normal, comprueba si este robot tiene el siguiente turno FIFO.
-    
+                && *_robotsEsperando.begin() == robot;     // Comprueba que el robot con el ID más bajo sea este robot.
+        }
+        return miTicket == _ticketAtendido       // En el modo normal, comprueba si este robot tiene el siguiente turno FIFO.
+    });
 
     --_cargadoresLibres;      // El robot tiene turno y plaza, le resamos esa para que salga ocupada
 
     if (_inanicion) {       //Si está activado el modo de fallo "inanicion", añade el robot al conjunto de robots que esperan un cargador.
         _robotsEsperando.erase(robot);      // Quita al robot del conjunto porque ya ha conseguido un cargador.
     }else{
-         ++_ticketAtendido;}}  // Avanzamos un turno, el siguiente ticket puede ocupar plaza si esta libre
-
+         ++_ticketAtendido;  // Avanzamos un turno, el siguiente ticket puede ocupar plaza si esta libre
+    }
+ }
     _cvCargadores.notify_all();     // Todos los robots vuelven a comprobar si les toca y si hay plaza libre.
 
     const auto fin = std::chrono::steady_clock::now();      //Para medir cuanto tiempo pasa desde que el robot llega hasta que consigue plaza
