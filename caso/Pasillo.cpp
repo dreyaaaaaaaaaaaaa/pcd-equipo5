@@ -99,7 +99,7 @@ void Pasillo::ocuparCargador(int robot)        //Demomento no vamos a usar el id
         _robotsEsperando.insert(robot);        // Añade el ID del robot al conjunto de robots que esperan un cargador.
     }
     _cvCargadores.wait(lock, [this, miTicket, robot]{      //Robot espera hasta que su ticket sea el siguiente y que haya un cargador libre wait libera el mutex y lo vuelve a bloquear 
-        if (_cargadoresLlibres == 0) {       //Si no hay cargadores libres, el robot se queda esperando
+        if (_cargadoresLibres == 0) {       //Si no hay cargadores libres, el robot se queda esperando
             return false;  
         }
         if (_inanicion) {        //Si el modo de fallo "inanicion" esta activado, se comprueba si hay robots con tickets menores que el del robot actual
