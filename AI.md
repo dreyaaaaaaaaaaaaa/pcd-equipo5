@@ -53,7 +53,7 @@ La versión paralelizada de `producto(int hilos)` en `competicion/Producto.cpp`,
 **Herramienta:** Claude Code (Claude Sonnet 5.5).
 
 **Para qué la he usado:**
-- Entender cerrojos, variables de condición y semáforos, y cómo está montado el proyecto y mi parte, porque llevaba meses sin seguir las clases.
+- Entender cerrojos, variables de condición y semáforos, y cómo está montado el proyecto y mi parte.
 - El código de `Semaforo.cpp` (`acquire`, `release` y `tryAcquireFor`) lo he hecho con ayuda de la IA, que me explicó cada línea. Los comentarios son míos y me corrigió dos que estaban mal.
 - Comprobar que compila y funciona, y redactar con salidas reales la sección de `--estres 10` de `EXPERIMENTOS.md` y la de compilar y ejecutar del `README.md`.
 - Hacer mis commits y push desde mi usuario de git, siempre después de pedírselo yo.
