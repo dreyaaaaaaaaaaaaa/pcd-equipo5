@@ -106,7 +106,7 @@ class CentroPedidos {
 public:
     static constexpr int FIN = -1;
     int sacarPedido();                         // bloquea si la cola está vacía; FIN = terminar
-    void depositar(int producto);              // bloquea si el buffer de empaquetado está lleno
+    void dejarProducto(int producto);              // bloquea si el buffer de empaquetado está lleno
     // ... resto: generadores, gestor, empaquetadores
 };
 
