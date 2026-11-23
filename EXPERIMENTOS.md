@@ -186,3 +186,10 @@ mucho más fácil que dos vayan a la vez a por la última unidad.
 Falla unas veces sí y otras no porque depende del orden en que el sistema operativo
 ejecuta los hilos: solo falla si un generador entra justo entre la consulta y la
 resta del otro.
+
+
+## Experimento del almacén: predicción previa
+
+Se compararán las entregas por segundo con `--robots 4`, `--robots 8` y `--robots 12`, manteniendo iguales las demás opciones.
+
+Voy a probar el programa con 4, 8 y 12 robots. Creo que con 8 robots habrá más entregas que con 4, porque trabajan más robots a la vez. Con 12 espero que mejore poco o que se quede parecido a 8, porque en el pasillo solo pueden estar 11 robots a la vez. Además, todos comparten los cargadores y el sitio donde dejan los productos. Esto es lo que creo que pasará; todavía no son resultados reales.
