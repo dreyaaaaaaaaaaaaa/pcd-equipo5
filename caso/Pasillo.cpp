@@ -40,11 +40,14 @@ void Pasillo::entrar(int robot) {
 }
 
 void Pasillo::ocupar(int robot, int celda) {
+    const auto inicio = std::chrono::steady_clock::now();      // para medir cuanto espero
     std::unique_lock<std::mutex> lk(_m);    // unique_lock porque wait tiene que poder soltarlo
     _cvCelda[celda].wait(lk, [this, celda] {    // espero mientras la celda este ocupada
         return _celdas[celda] == LIBRE;
     });
     marcarCelda(robot, celda);
+    _ctx.estadisticas.registrarEspera("robot (celda siguiente)", 
+    std::chrono::steady_clock::now() - inicio);
 }
 
 void Pasillo::soltar(int robot, int celda) {
