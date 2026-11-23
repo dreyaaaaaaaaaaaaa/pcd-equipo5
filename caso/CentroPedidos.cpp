@@ -3,6 +3,7 @@
 #include "Estadisticas.h"  
 #include <chrono>  
 #include <thread> 
+#include "Vigilante.h"
 
 //CONSTRUCTOR
 CentroPedidos::CentroPedidos(const Contexto& ctx, int existencias)
@@ -211,7 +212,7 @@ void CentroPedidos::bucleEmpaquetador(int id) {
         // El empaquetador tarda dos milisegundos en preparar cada paquete
         std::this_thread::sleep_for(std::chrono::milliseconds(2));
 
-        ctx.estadisticas.incrementar("paquetes");
-        ctx.vigilante.progreso();
+        _ctx.estadisticas.sumar("paquetes", 1);
+        _ctx.vigilante.progreso();
     }
 }
