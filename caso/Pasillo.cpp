@@ -33,7 +33,7 @@ void Pasillo::entrar(int robot) {
             return false;                         // no es mi turno o la entrada esta ocupada
         }
         if (_sinLimite) {
-            return true;                          // MODO INTERBLOQUEO: entro aunque esten los 12 dentro
+            return true;                          // MODOS DE FALLO: entro aunque esten los 12 dentro
         }
         return _dentro < MAX_DENTRO               // hay sitio (como mucho 11 dentro)
             && _celdas[CELDAS - 1] == LIBRE;      // y no viene nadie por la 11 (el de dentro tiene prioridad)

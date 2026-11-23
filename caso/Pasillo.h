@@ -35,7 +35,7 @@ private:
     int _dentro = 0;                        // cuantos robots hay dentro del pasillo
     long _turnoSiguiente = 0;               // turno que le toca al siguiente robot que llega a la entrada
     long _turnoActual = 0;                  // turno que puede entrar ahora
-    bool _sinLimite;                        // modo interbloqueo: no se limita cuantos entran
+    bool _sinLimite;                        // modos interbloqueo y livelock: no se limita cuantos entran
     void marcarCelda(int robot, int celda); // apunta la celda y comprueba el invariante (con _m cogido)
 
     //CARGADORES
