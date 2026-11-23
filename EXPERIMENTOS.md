@@ -193,3 +193,25 @@ resta del otro.
 Se compararán las entregas por segundo con `--robots 4`, `--robots 8` y `--robots 12`, manteniendo iguales las demás opciones.
 
 Voy a probar el programa con 4, 8 y 12 robots. Creo que con 8 robots habrá más entregas que con 4, porque trabajan más robots a la vez. Con 12 espero que mejore poco o que se quede parecido a 8, porque en el pasillo solo pueden estar 11 robots a la vez. Además, todos comparten los cargadores y el sitio donde dejan los productos. Esto es lo que creo que pasará; todavía no son resultados reales.
+
+
+## Experimento del almacén: resultado
+
+Orden (igual en los tres casos, solo cambia --robots):
+
+Almacen --robots N --pedidos 200 --existencias 30
+
+| Robots | Medidas (s) | Mediana (s) | Entregas | Entregas por segundo |
+|---:|---|---:|---:|---:|
+| 4  | 22,51 · 22,35 · 22,56 | 22,51 | 400 | 17,8 |
+| 8  | 17,19 · 16,99 · 17,24 | 17,19 | 400 | 23,3 |
+| 12 | 17,37 · 17,04 · 17,21 | 17,21 | 400 | 23,2 |
+
+La predicción se cumple. De 4 a 8 robots las entregas por segundo suben un 30 %, porque
+trabajan más robots a la vez. De 8 a 12 no mejoran: en el pasillo solo puede haber 11 robots
+a la vez y todos comparten los cargadores y el buffer de empaquetado, así que los robots
+de más se quedan esperando.
+
+Los tiempos son mayores de lo que darían 12 movimientos de 1 ms porque en Windows
+sleep_for(1 ms) dura bastante más que 1 ms. Esto afecta igual a los tres casos, así que
+la comparación sigue siendo válida.
