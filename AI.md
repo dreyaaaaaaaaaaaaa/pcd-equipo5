@@ -1,9 +1,26 @@
-Vicent: Qué es una variable "uint64_t"?
-Vicent: Este código cumple con las condiciones?
-Vicent: Cómo puedo hacer que las cumpla?
-Vicent: Por favor, enséñame a usar vectores, y si me enseñas a usarlos junto hilos ya es un favor enorme
-Vicent: Por favor, necesito que me ayudes a terminar la función, no tengo ni la más mínima idea de usar lambdas y no puedo más
-Vicent: Hacer que los hilos vayan con bucles no es descabellado, no? Y con un bucle también podemos calcular el resultado final, cierto?
+
+## 2026-11-22 — Vicent David Burgal — Competición y uso de vectores con hilos
+
+**Herramienta:** Perplexity.
+
+**Para qué la he usado:**
+- Entender qué es una variable `uint64_t` y por qué no se puede sustituir por `float` o `double` en la competición.
+- Comprobar si mi primera versión de `Producto.cpp` cumplía las condiciones del enunciado.
+- Ver qué faltaba para que la función usara “como mucho `hilos` hilos” y no creara siempre cuatro hilos.
+- Aprender a usar vectores y cómo combinarlos con hilos para guardar el resultado parcial de cada hilo.
+- Pedir ayuda para terminar la función `producto(int hilos)`, especialmente porque no sabía cómo funcionaban las lambdas.
+- Comprobar si era razonable usar bucles para que cada hilo calculara una parte de los valores y para combinar después los resultados parciales.
+- Entender qué significan las variables entre corchetes de una lambda, como `&resultadosParciales`, `numeroHilo`, `principioHilo` y `finalHilo`.
+- Resolver errores al ejecutar `competicion.exe`: entender que el ejecutable estaba en `build\competicion\Release\` y que había que ejecutarlo desde la terminal con `--comprobar`.
+
+**Qué se incorporó:** 
+La versión paralelizada de `producto(int hilos)` en `competicion/Producto.cpp`, dividendo los 2.000.000 valores en bloques, calculando un producto parcial por hilo y combinando los resultados módulo `MODULO`. También la comprobación con `.\build\competicion\Release\competicion.exe --comprobar` y la preparación de las mediciones con 1, 2, 4 y 8 hilos.
+
+**Qué se descartó:** Una versión que usaba un número concreto de hilos, porque no se adaptaba bien a otros valores. También se descartó usar `float` o `double`, porque pueden perder precisión en el cálculo.
+
+**Ficheros:** competicion/Producto.cpp, EXPERIMENTOS.md, README.md, DISENO.md, IA.md.
+
+---
 
 ---
 
