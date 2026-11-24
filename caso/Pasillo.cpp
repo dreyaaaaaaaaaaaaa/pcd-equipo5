@@ -8,7 +8,7 @@
 
 //CONSTRUCTOR
 Pasillo::Pasillo(const Contexto& ctx, int cargadores)
-    : _ctx(ctx),
+    : _ctx(ctx), //inicializa la referencia al contexto. La clase no copia el contexto; guarda una referencia.
     _sinLimite(ctx.config.fallo("interbloqueo") || ctx.config.fallo("livelock")),   // en estos modos no hay limite
     _cargadoresLibres(cargadores), // empiezan todos los cargadores libres
     _inanicion(ctx.config.fallo("inanicion")){   // Activa el modo de fallo "inanicion" 
@@ -19,18 +19,18 @@ Pasillo::Pasillo(const Contexto& ctx, int cargadores)
 //CELDAS
 void Pasillo::marcarCelda(int robot, int celda) {
     if (_celdas[celda] != LIBRE) {          // si ya hay otro robot se rompe el invariante
-        _ctx.estadisticas.violacion("celda " + std::to_string(celda) + ": entra el robot " +
-                                    std::to_string(robot) + " y ya estaba el robot " +
+        _ctx.estadisticas.violacion("celda " + std::to_string(celda) + ": entra el robot " + //Si la celda esta ocupada,  informa a las estadísticas de una violación. 
+                                    std::to_string(robot) + " y ya estaba el robot " +      //El mensaje incluye el número de celda, el robot que intenta entrar y el robot que ya estaba.
                                     std::to_string(_celdas[celda]));
     }
     _celdas[celda] = robot;                 // apunto que la celda es mia
 }
 
 void Pasillo::entrar(int robot) {
-    std::unique_lock<std::mutex> lk(_m);
+    std::unique_lock<std::mutex> lk(_m); //Tipo de bloqueo permite que una espera condicional suelte y vuelva a adquirir el mutex.
     const long miTurno = _turnoSiguiente++; // cojo numero, se entra por orden de llegada
-    _cvEntrada.wait(lk, [this, miTurno] {
-        if (miTurno != _turnoActual || _celdas[0] != LIBRE) {
+    _cvEntrada.wait(lk, [this, miTurno] { //Espera en _cvEntrada hasta que se cumpla la condición. Mientras espera, wait libera _m; cuando vuelve a comprobar, lo adquiere otra vez.
+        if (miTurno != _turnoActual || _celdas[0] != LIBRE) {//si no es el turno del robot o la celda 0 está ocupada, la condición es falsa y debe seguir esperando.
             return false;                         // no es mi turno o la entrada esta ocupada
         }
         if (_sinLimite) {
@@ -39,8 +39,8 @@ void Pasillo::entrar(int robot) {
         return _dentro < MAX_DENTRO               // hay sitio (como mucho 11 dentro)
             && _celdas[CELDAS - 1] == LIBRE;      // y no viene nadie por la 11 (el de dentro tiene prioridad)
     });
-    marcarCelda(robot, 0);
-    _dentro++;
+    marcarCelda(robot, 0); //ocupa la celda 0 para este robot.
+    _dentro++;      //incrementa el número de robots dentro.
     _turnoActual++;                         // paso el turno al siguiente
     _cvEntrada.notify_all();                // para que el del siguiente turno lo compruebe
 }
@@ -51,13 +51,13 @@ void Pasillo::ocupar(int robot, int celda) {
     _cvCelda[celda].wait(lk, [this, celda] {    // espero mientras la celda este ocupada
         return _celdas[celda] == LIBRE;
     });
-    marcarCelda(robot, celda);
-    _ctx.estadisticas.registrarEspera("robot (celda siguiente)", 
+    marcarCelda(robot, celda);  //marca la celda como ocupada por el robot.
+    _ctx.estadisticas.registrarEspera("robot (celda siguiente)",    //registra cuánto tiempo ha esperado el robot por la siguiente celda.
     std::chrono::steady_clock::now() - inicio);
 }
 
 void Pasillo::soltar(int robot, int celda) {
-    std::lock_guard<std::mutex> lk(_m);
+    std::lock_guard<std::mutex> lk(_m);     //El mutex se libera automáticamente al salir del bloque o método.
     if (_celdas[celda] == robot) {          // solo la libero si de verdad es mia
         _celdas[celda] = LIBRE;
     }
@@ -68,17 +68,17 @@ void Pasillo::soltar(int robot, int celda) {
 }
 
 bool Pasillo::intentarOcupar(int robot, int celda) {
-    std::lock_guard<std::mutex> lk(_m);
+    std::lock_guard<std::mutex> lk(_m);     //bloquea _m para revisar y cambiar la celda de forma protegida.
     if (_celdas[celda] != LIBRE) {
         return false;                       // ocupada: no espero, le digo al robot que no ha podido
     }
-    marcarCelda(robot, celda);
+    marcarCelda(robot, celda);      //si está libre, la asigna al robot
     return true;
 }
 
 void Pasillo::salir(int robot) {
-    std::lock_guard<std::mutex> lk(_m);
-    if (_celdas[0] == robot) {
+    std::lock_guard<std::mutex> lk(_m);     //protege la operación con _m
+    if (_celdas[0] == robot) {      //libera la celda 0 solo si pertenece a ese robot
         _celdas[0] = LIBRE;
     }
     _dentro--;                              // un robot menos dentro
