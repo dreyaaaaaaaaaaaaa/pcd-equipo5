@@ -176,7 +176,7 @@ almacen --fallo inanicion
 --estres 10: 10 OK, 0 con invariantes rotos (misma configuración en todas).
 ```
 
-el modo inanicion todavia no esta hecho en el codigo, asi que se comporta igual que la version correcta y no se ve ninguna espera larga en el cargador. hay que repetir esta salida cuando alejandro lo termine.
+el modo inanicion ya esta hecho en el codigo, pero con esta configuracion no se nota. la salida sale igual que la de la version correcta y la espera maxima del cargador tambien es parecida: en 6 ejecuciones de cada, entre 21 y 34 ms sin fallo y entre 21 y 78 ms con el fallo, y solo una de las seis se dispara. falta encontrar una configuracion en la que se vea claro. cuando la tengamos se pondra aqui la salida con esa orden.
 
 ### por que la misma configuracion falla unas veces si y otras no
 

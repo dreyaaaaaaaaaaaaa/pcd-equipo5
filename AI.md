@@ -1,5 +1,5 @@
 
-## 2026-11-22 — Vicent David Burgal — Competición y uso de vectores con hilos
+## 2026-11-17 - 2026-11-23 — Vicent David Burgal — Competición y uso de vectores con hilos
 
 **Herramienta:** Perplexity.
 
