@@ -1,33 +1,57 @@
-Tras ejecutar build\competicion\Release\competicion.exe --comprobar sale:
+Para la build: Usar cmake --build build --config Release en la carpeta del proyecto
 
-medición 1: 3738.52 ms
+Tras ejecutar build\competicion\Release\competicion.exe --comprobar --veces 5 sale:
+
+medición 1: 3783.54 ms
+medición 2: 3744.96 ms
+medición 3: 3736.42 ms
+medición 4: 3760.49 ms
+medición 5: 3748.16 ms
 resultado: 521537800
-hilos: 1   mediana: 3738.52 ms
+hilos: 1   mediana: 3748.16 ms
 correcto:  521537800   OK
 
-Tras build\competicion\Release\competicion.exe --hilos 1:
+Tras build\competicion\Release\competicion.exe --hilos 1 --veces 5:
 
-medición 1: 3859.71 ms
+medición 1: 3760.56 ms
+medición 2: 3756.12 ms
+medición 3: 3744.5 ms
+medición 4: 3766.18 ms
+medición 5: 3786.02 ms
 resultado: 521537800
-hilos: 1   mediana: 3859.71 ms
+hilos: 1   mediana: 3760.56 ms
 
-Tras build\competicion\Release\competicion.exe --hilos 2:
+Tras build\competicion\Release\competicion.exe --hilos 2 --veces 5:
 
-medición 1: 2833.24 ms
+medición 1: 2820.91 ms
+medición 2: 2827.98 ms
+medición 3: 2897.38 ms
+medición 4: 2824.78 ms
+medición 5: 2823.25 ms
 resultado: 521537800
-hilos: 2   mediana: 2833.24 ms
+hilos: 2   mediana: 2824.78 ms
 
-Tras build\competicion\Release\competicion.exe --hilos 4:
+Tras build\competicion\Release\competicion.exe --hilos 4 --veces 5:
 
-medición 1: 1651.78 ms
+medición 1: 1660.35 ms
+medición 2: 1656.48 ms
+medición 3: 1673.53 ms
+medición 4: 1157.53 ms
+medición 5: 1294.35 ms
 resultado: 521537800
-hilos: 4   mediana: 1651.78 ms
+hilos: 4   mediana: 1656.48 ms
 
-Tras build\competicion\Release\competicion.exe --hilos 8:
+Tras build\competicion\Release\competicion.exe --hilos 8 --veces 5:
 
-medición 1: 936.158 ms
+medición 1: 937.51 ms
+medición 2: 910.828 ms
+medición 3: 930.657 ms
+medición 4: 917.643 ms
+medición 5: 877.563 ms
 resultado: 521537800
-hilos: 8   mediana: 936.158 ms
+hilos: 8   mediana: 917.643 ms
+
+
 
 ## Experimento de la competición
 
@@ -37,14 +61,16 @@ Para cada número de hilos se ha ejecutado el programa una vez y se ha tomado la
 
 | Hilos | Mediana (ms) |
 |---:|---:|
-| 1 | 3940.41 |
-| 2 | 2835.68 |
-| 4 | 1698.16 |
-| 8 | 882.687 |
+| 1 | 3760.56 |
+| 2 | 2824.78 |
+| 4 | 1157.53 |
+| 8 | 917.643 |
 
 El resultado obtenido ha sido 521537800 y la comprobación con --comprobar ha indicado OK.
 
 Al aumentar el número de hilos, el trabajo de calcular el producto de los 2.000.000 valores se reparte entre varios hilos, por eso el tiempo disminuye al usar más hilos dado que los cálculos se realizan de forma concurrente.
+
+El cambio de velocidad de 8 hilos respecto a 4 es que hay el doble de hilos trabajando, permitinedo realizar el trabajo más rápido al hacerlo de forma concurrente
 
 El ordenador utilizado tiene 10 núcleos físicos y 16 núcleos lógicos.
 
