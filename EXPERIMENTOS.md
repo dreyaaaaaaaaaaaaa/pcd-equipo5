@@ -241,3 +241,16 @@ de más se quedan esperando.
 Los tiempos son mayores de lo que darían 12 movimientos de 1 ms porque en Windows
 sleep_for(1 ms) dura bastante más que 1 ms. Esto afecta igual a los tres casos, así que
 la comparación sigue siendo válida.
+
+
+
+## Prueba del modo inanición
+
+Configuración: `--robots 24 --generadores 4 --cargadores 1 --pedidos 500 --existencias 30`.
+
+| Ejecución | Entregas | Espera máxima de `robot (cargador)` |
+|---|---:|---:|
+| Sin modo de fallo | 2000 | 0,03 ms |
+| Con `--fallo inanicion` | 2000 | 0,23 ms |
+
+En esta prueba, los robots esperaron más por el cargador con --fallo inanicion. En ese modo, primero pasa el robot con el número más bajo de los que están esperando. El resultado puede cambiar un poco en otras pruebas, porque depende de qué robots estén esperando cuando se queda libre el cargador.
