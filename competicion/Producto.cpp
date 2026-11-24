@@ -48,7 +48,7 @@ std::uint64_t valoresPorHilo = N_VALORES / numeroHilos;
 // El primer hilo empieza en el valor 0.
 std::uint64_t comienzo = 0;
 
-for (int numeroHilo = 0; numeroHilo < numeroHilos; ++numeroHilo) {
+for (std::uint64_t numeroHilo = 0; numeroHilo < numeroHilos; ++numeroHilo) {
     // Calculamos hasta qué valor llega este hilo.
     std::uint64_t final = comienzo + valoresPorHilo;
 
@@ -80,14 +80,14 @@ for (int numeroHilo = 0; numeroHilo < numeroHilos; ++numeroHilo) {
 }
     
 // Esperamos a que terminen todos los hilos.
-for (int numeroHilo = 0; numeroHilo < numeroHilos; ++numeroHilo) {
+for (std::uint64_t numeroHilo = 0; numeroHilo < numeroHilos; ++numeroHilo) {
     hilosCreados[numeroHilo].join();
 }
 
 // Multiplicamos los resultados de todos los hilos.
 std::uint64_t resultadoFinal = 1;
 
-for (int numeroHilo = 0; numeroHilo < numeroHilos; ++numeroHilo) {
+for (std::uint64_t numeroHilo = 0; numeroHilo < numeroHilos; ++numeroHilo) {
     resultadoFinal = (resultadoFinal * resultadosParciales[numeroHilo]) % MODULO;
 }
 
